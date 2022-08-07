@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "space_marine_race/NOBADGE",
+	associated_race = "tyranids_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Moloch",
+	Eyes =  
+	{
+		b = 0,
+		g = 255,
+		r = 0,
+	},
+	Weapons =  
+	{
+		b = 182,
+		g = 215,
+		r = 235,
+	},
+	Primary =  
+	{
+		b = 26,
+		g = 26,
+		r = 209,
+	},
+	Trim =  
+	{
+		b = 58,
+		g = 139,
+		r = 33,
+	},
+	Secondary =  
+	{
+		b = 70,
+		g = 70,
+		r = 70,
+	},
+}
+

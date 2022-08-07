@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "chaos_marine_race/Sacrifice",
+	associated_race = "deamons_race",
+	banner_name = "chaos_marine_race/sacrifice",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Daemonic Scourge",
+	Eyes =  
+	{
+		b = 62,
+		g = 51,
+		r = 49,
+	},
+	Weapons =  
+	{
+		b = 0,
+		g = 0,
+		r = 0,
+	},
+	Primary =  
+	{
+		b = 80,
+		g = 104,
+		r = 146,
+	},
+	Trim =  
+	{
+		b = 144,
+		g = 133,
+		r = 142,
+	},
+	Secondary =  
+	{
+		b = 104,
+		g = 156,
+		r = 210,
+	},
+}
+

@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "space_marine_race/NOBADGE",
+	associated_race = "tyranids_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Harbinger",
+	Eyes =  
+	{
+		b = 26,
+		g = 26,
+		r = 209,
+	},
+	Weapons =  
+	{
+		b = 130,
+		g = 146,
+		r = 218,
+	},
+	Primary =  
+	{
+		b = 108,
+		g = 13,
+		r = 110,
+	},
+	Trim =  
+	{
+		b = 139,
+		g = 62,
+		r = 164,
+	},
+	Secondary =  
+	{
+		b = 40,
+		g = 40,
+		r = 40,
+	},
+}
+

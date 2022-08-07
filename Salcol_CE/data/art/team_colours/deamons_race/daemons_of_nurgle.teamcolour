@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "chaos_marine_race/icon_nurgle",
+	associated_race = "deamons_race",
+	banner_name = "chaos_marine_race/death_guard_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Daemons of Nurgle",
+	Eyes =  
+	{
+		b = 55,
+		g = 62,
+		r = 29,
+	},
+	Weapons =  
+	{
+		b = 15,
+		g = 153,
+		r = 121,
+	},
+	Primary =  
+	{
+		b = 40,
+		g = 112,
+		r = 124,
+	},
+	Trim =  
+	{
+		b = 71,
+		g = 99,
+		r = 115,
+	},
+	Secondary =  
+	{
+		b = 87,
+		g = 133,
+		r = 73,
+	},
+}
+

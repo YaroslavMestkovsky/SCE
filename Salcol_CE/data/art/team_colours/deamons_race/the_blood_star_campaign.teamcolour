@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "",
+	associated_race = "deamons_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "The Blood Star Campaign",
+	Eyes =  
+	{
+		b = 74,
+		g = 0,
+		r = 156,
+	},
+	Weapons =  
+	{
+		b = 24,
+		g = 0,
+		r = 206,
+	},
+	Primary =  
+	{
+		b = 18,
+		g = 23,
+		r = 204,
+	},
+	Trim =  
+	{
+		b = 57,
+		g = 57,
+		r = 57,
+	},
+	Secondary =  
+	{
+		b = 69,
+		g = 56,
+		r = 87,
+	},
+}
+

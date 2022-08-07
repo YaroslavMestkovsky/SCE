@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "space_marine_race/NOBADGE",
+	associated_race = "tyranids_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Giger",
+	Eyes =  
+	{
+		b = 132,
+		g = 130,
+		r = 128,
+	},
+	Weapons =  
+	{
+		b = 70,
+		g = 70,
+		r = 70,
+	},
+	Primary =  
+	{
+		b = 60,
+		g = 60,
+		r = 60,
+	},
+	Trim =  
+	{
+		b = 132,
+		g = 130,
+		r = 128,
+	},
+	Secondary =  
+	{
+		b = 40,
+		g = 40,
+		r = 40,
+	},
+}
+

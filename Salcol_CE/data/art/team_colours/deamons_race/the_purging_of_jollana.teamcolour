@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "",
+	associated_race = "deamons_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "The Purging of Jollana",
+	Eyes =  
+	{
+		b = 150,
+		g = 132,
+		r = 74,
+	},
+	Weapons =  
+	{
+		b = 250,
+		g = 243,
+		r = 173,
+	},
+	Primary =  
+	{
+		b = 155,
+		g = 133,
+		r = 40,
+	},
+	Trim =  
+	{
+		b = 90,
+		g = 34,
+		r = 141,
+	},
+	Secondary =  
+	{
+		b = 198,
+		g = 189,
+		r = 132,
+	},
+}
+

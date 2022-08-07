@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "chaos_marine_race/icon_tzeentch_badge",
+	associated_race = "deamons_race",
+	banner_name = "chaos_marine_race/tzeentch_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Tzeentch",
+	Eyes =  
+	{
+		b = 62,
+		g = 49,
+		r = 19,
+	},
+	Weapons =  
+	{
+		b = 37,
+		g = 44,
+		r = 36,
+	},
+	Primary =  
+	{
+		b = 103,
+		g = 69,
+		r = 13,
+	},
+	Trim =  
+	{
+		b = 169,
+		g = 119,
+		r = 56,
+	},
+	Secondary =  
+	{
+		b = 164,
+		g = 70,
+		r = 82,
+	},
+}
+

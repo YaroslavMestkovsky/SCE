@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "",
+	associated_race = "deamons_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "The Raxos Civil War",
+	Eyes =  
+	{
+		b = 66,
+		g = 82,
+		r = 0,
+	},
+	Weapons =  
+	{
+		b = 255,
+		g = 255,
+		r = 255,
+	},
+	Primary =  
+	{
+		b = 232,
+		g = 230,
+		r = 203,
+	},
+	Trim =  
+	{
+		b = 255,
+		g = 255,
+		r = 255,
+	},
+	Secondary =  
+	{
+		b = 123,
+		g = 57,
+		r = 41,
+	},
+}
+

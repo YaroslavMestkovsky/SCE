@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "",
+	associated_race = "deamons_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "The Gheistos Cataclysm",
+	Eyes =  
+	{
+		b = 0,
+		g = 98,
+		r = 204,
+	},
+	Weapons =  
+	{
+		b = 123,
+		g = 140,
+		r = 155,
+	},
+	Primary =  
+	{
+		b = 0,
+		g = 98,
+		r = 204,
+	},
+	Trim =  
+	{
+		b = 135,
+		g = 181,
+		r = 144,
+	},
+	Secondary =  
+	{
+		b = 66,
+		g = 82,
+		r = 0,
+	},
+}
+

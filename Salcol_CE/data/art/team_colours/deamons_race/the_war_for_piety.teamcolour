@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "",
+	associated_race = "deamons_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "The War for Piety",
+	Eyes =  
+	{
+		b = 35,
+		g = 36,
+		r = 123,
+	},
+	Weapons =  
+	{
+		b = 0,
+		g = 131,
+		r = 206,
+	},
+	Primary =  
+	{
+		b = 84,
+		g = 113,
+		r = 127,
+	},
+	Trim =  
+	{
+		b = 87,
+		g = 84,
+		r = 84,
+	},
+	Secondary =  
+	{
+		b = 43,
+		g = 79,
+		r = 198,
+	},
+}
+

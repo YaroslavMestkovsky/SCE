@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "chaos_marine_race/the_purge_badge",
+	associated_race = "deamons_race",
+	banner_name = "dark_eldar_race/BLACKHEART",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Incursion of Shadows",
+	Eyes =  
+	{
+		b = 112,
+		g = 101,
+		r = 101,
+	},
+	Weapons =  
+	{
+		b = 39,
+		g = 44,
+		r = 53,
+	},
+	Primary =  
+	{
+		b = 24,
+		g = 12,
+		r = 14,
+	},
+	Trim =  
+	{
+		b = 0,
+		g = 0,
+		r = 31,
+	},
+	Secondary =  
+	{
+		b = 35,
+		g = 30,
+		r = 28,
+	},
+}
+

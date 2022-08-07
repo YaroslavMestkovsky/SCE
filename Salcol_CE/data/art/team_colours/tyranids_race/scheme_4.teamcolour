@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "space_marine_race/NOBADGE",
+	associated_race = "tyranids_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Kraken",
+	Eyes =  
+	{
+		b = 26,
+		g = 26,
+		r = 209,
+	},
+	Weapons =  
+	{
+		b = 130,
+		g = 146,
+		r = 218,
+	},
+	Primary =  
+	{
+		b = 182,
+		g = 215,
+		r = 235,
+	},
+	Trim =  
+	{
+		b = 44,
+		g = 44,
+		r = 148,
+	},
+	Secondary =  
+	{
+		b = 44,
+		g = 44,
+		r = 148,
+	},
+}
+

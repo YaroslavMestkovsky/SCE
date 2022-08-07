@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "space_marine_race/NOBADGE",
+	associated_race = "tyranids_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Leviathan",
+	Eyes =  
+	{
+		b = 0,
+		g = 240,
+		r = 255,
+	},
+	Weapons =  
+	{
+		b = 26,
+		g = 26,
+		r = 209,
+	},
+	Primary =  
+	{
+		b = 182,
+		g = 215,
+		r = 235,
+	},
+	Trim =  
+	{
+		b = 26,
+		g = 26,
+		r = 209,
+	},
+	Secondary =  
+	{
+		b = 108,
+		g = 13,
+		r = 110,
+	},
+}
+

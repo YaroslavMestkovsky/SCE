@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "chaos_marine_race/blood_legion_badge",
+	associated_race = "deamons_race",
+	banner_name = "chaos_marine_race/blood_legion_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Beasts of Apocalypse",
+	Eyes =  
+	{
+		b = 62,
+		g = 40,
+		r = 4,
+	},
+	Weapons =  
+	{
+		b = 0,
+		g = 0,
+		r = 0,
+	},
+	Primary =  
+	{
+		b = 10,
+		g = 28,
+		r = 103,
+	},
+	Trim =  
+	{
+		b = 43,
+		g = 54,
+		r = 199,
+	},
+	Secondary =  
+	{
+		b = 2,
+		g = 3,
+		r = 4,
+	},
+}
+

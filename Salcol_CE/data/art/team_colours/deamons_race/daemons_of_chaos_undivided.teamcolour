@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "chaos_marine_race/chaos_undivided_badge",
+	associated_race = "deamons_race",
+	banner_name = "chaos_marine_race/chaos_undivided_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Daemons of Chaos Undivided",
+	Eyes =  
+	{
+		b = 59,
+		g = 89,
+		r = 104,
+	},
+	Weapons =  
+	{
+		b = 114,
+		g = 206,
+		r = 220,
+	},
+	Primary =  
+	{
+		b = 82,
+		g = 93,
+		r = 104,
+	},
+	Trim =  
+	{
+		b = 62,
+		g = 92,
+		r = 169,
+	},
+	Secondary =  
+	{
+		b = 8,
+		g = 8,
+		r = 99,
+	},
+}
+

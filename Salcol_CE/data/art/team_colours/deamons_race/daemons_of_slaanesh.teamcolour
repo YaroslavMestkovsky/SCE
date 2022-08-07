@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "chaos_marine_race/icon_slaanesh",
+	associated_race = "deamons_race",
+	banner_name = "chaos_marine_race/flawless_host_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Daemons of Slaanesh",
+	Eyes =  
+	{
+		b = 208,
+		g = 9,
+		r = 180,
+	},
+	Weapons =  
+	{
+		b = 246,
+		g = 227,
+		r = 157,
+	},
+	Primary =  
+	{
+		b = 103,
+		g = 47,
+		r = 100,
+	},
+	Trim =  
+	{
+		b = 149,
+		g = 73,
+		r = 108,
+	},
+	Secondary =  
+	{
+		b = 129,
+		g = 42,
+		r = 248,
+	},
+}
+

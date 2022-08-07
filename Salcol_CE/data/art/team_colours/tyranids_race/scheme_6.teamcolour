@@ -1,0 +1,43 @@
+LocalInfo =  
+{
+	badge_name = "space_marine_race/NOBADGE",
+	associated_race = "tyranids_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Titan",
+	Eyes =  
+	{
+		b = 251,
+		g = 251,
+		r = 251,
+	},
+	Weapons =  
+	{
+		b = 182,
+		g = 215,
+		r = 235,
+	},
+	Primary =  
+	{
+		b = 64,
+		g = 63,
+		r = 63,
+	},
+	Trim =  
+	{
+		b = 79,
+		g = 194,
+		r = 45,
+	},
+	Secondary =  
+	{
+		b = 39,
+		g = 39,
+		r = 133,
+	},
+}
+
+

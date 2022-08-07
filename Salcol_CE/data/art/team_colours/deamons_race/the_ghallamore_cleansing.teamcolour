@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "",
+	associated_race = "deamons_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "The Ghallamore Cleansing",
+	Eyes =  
+	{
+		b = 15,
+		g = 29,
+		r = 116,
+	},
+	Weapons =  
+	{
+		b = 253,
+		g = 204,
+		r = 163,
+	},
+	Primary =  
+	{
+		b = 15,
+		g = 29,
+		r = 116,
+	},
+	Trim =  
+	{
+		b = 156,
+		g = 99,
+		r = 49,
+	},
+	Secondary =  
+	{
+		b = 77,
+		g = 120,
+		r = 243,
+	},
+}
+

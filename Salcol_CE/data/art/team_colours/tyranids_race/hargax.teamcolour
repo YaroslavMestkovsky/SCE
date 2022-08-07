@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "space_marine_race/NOBADGE",
+	associated_race = "tyranids_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Hargax",
+	Eyes =  
+	{
+		b = 47,
+		g = 237,
+		r = 247,
+	},
+	Weapons =  
+	{
+		b = 226,
+		g = 240,
+		r = 250,
+	},
+	Primary =  
+	{
+		b = 82,
+		g = 118,
+		r = 127,
+	},
+	Trim =  
+	{
+		b = 158,
+		g = 151,
+		r = 200,
+	},
+	Secondary =  
+	{
+		b = 185,
+		g = 182,
+		r = 177,
+	},
+}
+

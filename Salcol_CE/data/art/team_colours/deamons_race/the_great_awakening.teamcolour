@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "",
+	associated_race = "deamons_race",
+	banner_name = "",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "The Great Awakening",
+	Eyes =  
+	{
+		b = 82,
+		g = 81,
+		r = 81,
+	},
+	Weapons =  
+	{
+		b = 155,
+		g = 107,
+		r = 139,
+	},
+	Primary =  
+	{
+		b = 61,
+		g = 58,
+		r = 62,
+	},
+	Trim =  
+	{
+		b = 30,
+		g = 10,
+		r = 66,
+	},
+	Secondary =  
+	{
+		b = 85,
+		g = 46,
+		r = 143,
+	},
+}
+
