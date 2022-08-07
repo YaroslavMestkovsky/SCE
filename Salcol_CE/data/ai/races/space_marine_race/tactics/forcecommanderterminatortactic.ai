@@ -1,0 +1,129 @@
+----------------------------------------
+-- File: 'forcecommanderterminatortactic.ai'
+-- Edited by Thudmeizer @ 07.06.2016
+-- Edited by LarkinVB   @ 16.08.2005
+-- Edited by Cylarne_04 2011
+
+class 'ForceCommanderTerminatorTactic' (SpaceMarineInfantryTactic)
+
+ForceCommanderTerminator = {}
+
+function ForceCommanderTerminatorTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Force Commander Terminator Tactic")
+
+	self.m_iForceCommanderTerminatorUpgradePath = math.random(0, 2)
+end
+
+-- Assassinate win condition -- never attack
+function ForceCommanderTerminatorTactic:IsAttacker()
+	return (not cpu_manager.assassinate and self:IsCommanderAttacker())
+end
+
+-- Assassinate win condition -- never defend
+function ForceCommanderTerminatorTactic:IsDefender()
+	return (not cpu_manager.assassinate and self:IsCommanderDefender())
+end
+
+-- Force Commander is allowed to retreat even directly after a jump
+function ForceCommanderTerminatorTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+-- Assassinate win condition -- never jump into combat
+function ForceCommanderTerminatorTactic:JumpAttack()
+
+	if (not cpu_manager.assassinate) then
+		Tactic.JumpAttack(self)
+	end
+end
+
+function ForceCommanderTerminatorTactic:CanJumpAttached()
+	return true
+end
+
+function ForceCommanderTerminatorTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (ForceCommanderTerminator.orbital_b == nil) then
+		ForceCommanderTerminator.orbital_b = cpu_manager.stats:GetAbilityID( "marines_orbital_bombardment_terminator" )
+	end
+	if (ForceCommanderTerminator.battlecry == nil) then
+		ForceCommanderTerminator.battlecry = cpu_manager.stats:GetAbilityID( "marines_battlecry" )
+	end
+	if (ForceCommanderTerminator.bomb == nil) then
+		ForceCommanderTerminator.bomb = cpu_manager.stats:GetAbilityID( "marines_commander_bomb" )
+	end
+	if (ForceCommanderTerminator.hellstorm == nil) then
+		ForceCommanderTerminator.hellstorm = cpu_manager.stats:GetAbilityID( "marines_hellstorm" )
+	end
+	if (ForceCommanderTerminator.run == nil) then
+		ForceCommanderTerminator.run = cpu_manager.stats:GetAbilityID( "all_run!" )	
+	end
+end
+
+function ForceCommanderTerminatorTactic:DoAbilities()
+
+	local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
+	local iPower = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Power )
+
+	-- Try to use battlecry
+	Ability.DoAbilityArea( self.squad_ai, ForceCommanderTerminator.battlecry, Ability.Filters.CloseInCombat, 10 )
+	
+	-- Try to use orbital bombardement
+	Ability.DoAbilityPos(self.squad_ai, ForceCommanderTerminator.orbital_b, Ability.Filters.CloseEnemy, 24)
+	Ability.DoAbilityPos(self.squad_ai, ForceCommanderTerminator.orbital_b, Ability.EntityFilters.CloseBaseEntityEnemy, 3)
+	
+	-- Try to place bomb
+	Ability.DoAbilityPos(self.squad_ai, ForceCommanderTerminator.bomb, Ability.Filters.CloseEnemy, 24)
+	Ability.DoAbilityPos(self.squad_ai, ForceCommanderTerminator.bomb, Ability.EntityFilters.CloseBaseEntityEnemy, 3)
+
+	-- Try to call down a hellstorm turret farm
+	if (iRequisition >= 1000 and iPower >= 1000) then
+		Ability.DoAbilityPos(self.squad_ai, ForceCommanderTerminator.hellstorm, Ability.Filters.CloseEnemy, 25)
+		Ability.DoAbilityPos(self.squad_ai, ForceCommanderTerminator.hellstorm, Ability.EntityFilters.CloseBaseEntityEnemy, 5)
+	end
+
+	-- Run if safe
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.stateID ~= Tactic.StateID.NoState) then
+
+		-- If I am safe I can run
+		if (self.squad_ai:CanDoAbility( ForceCommanderTerminator.run )) then
+			self.squad_ai:DoSpecialAbility( ForceCommanderTerminator.run )
+		end
+	end
+end
+
+function ForceCommanderTerminatorTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+		
+	-- Assassinate win condition -- never attach to a squad
+	if (not cpu_manager.assassinate) then
+		
+		-- Attach to melee in tier3+
+		if (cpu_manager:GetTierLevel() > 2) then
+		
+			if (self:TryAttachSquad(true, true, 50, 100, nil) ~= nil) then
+				return
+			end
+		end
+		if (self:TryAttachSquad(false, true, 50, 100, self.m_fCommanderAttachHealth) == nil) then
+			self:TryAttachSquadMelee()
+		end
+	end
+
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end

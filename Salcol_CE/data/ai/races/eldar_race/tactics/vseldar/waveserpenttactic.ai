@@ -1,0 +1,16 @@
+----------------------------------------
+-- File: 'waveserpenttactic.ai'
+-- Edited by Thudmeizer		@ 04.05.2016
+
+class 'WaveSerpentTactic' (EldarVehicleTactic)
+
+WaveSerpent = {}
+
+function WaveSerpentTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Wave Serpent Grav Tank Tactic")
+	
+	-- Vehicle is a light transport
+	self.m_iTransportVehicle = 1
+	self.m_iTransportSlots = 2
+end

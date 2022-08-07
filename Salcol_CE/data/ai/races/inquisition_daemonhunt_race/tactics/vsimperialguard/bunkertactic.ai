@@ -1,0 +1,98 @@
+----------------------------------------
+-- File: 'sistersnunciatetactic.ai'
+-- Edited by Thudmeizer @ 11.04.2016
+-- Edited by Cylarne_04 2011
+
+class 'SistersNunciateTactic' (SistersInfantryTactic)
+
+SistersNunciate = {}
+
+function SistersNunciateTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Sisters Nunciate Tactic")
+
+	self.timedDirectSpawnAbility = Timer( SistersNunciateTactic.DoDirectSpawnAbility, self, 5 )
+end
+
+function SistersNunciateTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function SistersNunciateTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+-- Nuicate is allowed to retreat even directly after a jump
+function SistersNunciateTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+function SistersNunciateTactic:JumpAttack()
+	Tactic.JumpAttack(self)
+end
+
+function SistersNunciateTactic:CanJumpAttached()
+	return true
+end
+
+function SistersNunciateTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (SistersNunciate.ascension_id == nil) then
+		SistersNunciate.ascension_id = cpu_manager.stats:GetAbilityID( "sisters_act_of_faith_ascension" )
+	end
+
+	if (SistersNunciate.divinelight_id == nil) then
+		SistersNunciate.divinelight_id = cpu_manager.stats:GetAbilityID( "sisters_act_of_faith_divine_light" )
+	end
+
+	if (SistersNunciate.dolanphail_id == nil) then
+		SistersNunciate.dolanphail_id = cpu_manager.stats:GetAbilityID( "sisters_act_of_faith_dolan_phail" )
+	end
+
+	if (SistersNunciate.tears_id == nil) then
+		SistersNunciate.tears_id = cpu_manager.stats:GetAbilityID( "sisters_act_of_faith_emperors_tears" )
+	end
+
+	if (SistersNunciate.bomb_id == nil) then
+		SistersNunciate.bomb_id = cpu_manager.stats:GetAbilityID( "sisters_commander_bomb" )
+	end
+	
+	if (SistersNunciate.invulnerability_id == nil) then
+		SistersNunciate.invulnerability_id = cpu_manager.stats:GetAbilityID( "sisters_act_of_faith_invulnerability_nunciate" )
+	end
+
+	if (SistersNunciate.run_id == nil) then
+		SistersNunciate.run_id = cpu_manager.stats:GetAbilityID( "all_run!" )	
+	end
+end
+
+function SistersNunciateTactic:DoAbilities()
+
+	-- We are dying, lower requisites for attacks
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+
+		-- Act of Faith - Ascension: Summons non-player controlled angels to fight for a short period (Faith cost: 200)
+		Ability.DoAbilityArea( self.squad_ai, SistersNunciate.ascension_id, Ability.Filters.CloseEnemy, 10, 5 )
+
+		-- Act of Faith - Purifying Light: Reduces enemy weapon accuracy and increases own weapon damage (Faith cost: 60)
+		Ability.DoAbilityTarget( self.squad_ai, SistersNunciate.divinelight_id, Ability.Filters.CloseSquadEnemy, 1 )
+	else
+		Ability.DoAbilityArea( self.squad_ai, SistersNunciate.ascension_id, Ability.Filters.CloseEnemy, 10, 10 )
+		Ability.DoAbilityTarget( self.squad_ai, SistersNunciate.divinelight_id, Ability.Filters.CloseInfantryEnemy, 6 )
+	end
+
+	-- Phial of Dolain: Timed support ability, grants a boost of movement speed to the entire squad when used. (Faith cost: 125)
+	if (self.squad_ai:CanDoAbility(SistersNunciate.dolanphail_id)) then
+
+		if (self:IsMoving() or self:IsInSubState()) then
+			self.squad_ai:DoSpecialAbility(SistersNunciate.dolanphail_id) 
+		end
+	end
+	
+	-- Emperor's Tears: Timed aggressive ability, grants invulnerability and an extra boost of damage to the squad when used. (Faith cost: 200)
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:Ge

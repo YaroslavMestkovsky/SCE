@@ -1,0 +1,68 @@
+----------------------------------------
+-- File: 'Broodlordtactic.ai'
+-- Edited by Thudmeizer @ 25.05.2007
+-- Edited by Aliaska_RuS 22.02.2021
+
+class 'BroodLordTactic' (TyranidInfantryTactic)
+
+BroodLord = {}
+
+function BroodLordTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Brood Lord Tactic")
+end
+
+-- Assassinate win condition -- never attack
+function BroodLordTactic:IsAttacker()
+	return (not cpu_manager.assassinate and self:IsCommanderAttacker())
+end
+
+-- Assassinate win condition -- never defend
+function BroodLordTactic:IsDefender()
+	return (not cpu_manager.assassinate and self:IsCommanderDefender())
+end
+
+function BroodLordTactic:InitAbilities()
+        if (BroodLord.despair_id == nil) then
+		BroodLord.despair_id = cpu_manager.stats:GetAbilityID( "tyranids_wargear_broodlord_hypnotic_gaze" )
+	end
+        if (BroodLord.gaze_id == nil) then
+		BroodLord.gaze_id = cpu_manager.stats:GetAbilityID( "tyranids_wargear_broodlord_hypnotic_gaze" )
+	end
+        if (BroodLord.miasma_id == nil) then
+		BroodLord.miasma_id = cpu_manager.stats:GetAbilityID( "tyranids_wargear_broodlord_corrosive_miasma" )
+	end
+        if (BroodLord.chameleon_id == nil) then
+		BroodLord.chameleon_id = cpu_manager.stats:GetAbilityID( "tyranids_wargear_broodlord_chameleon_skin" )
+	end
+        if (BroodLord.ymgarl_id == nil) then
+		BroodLord.ymgarl_id = cpu_manager.stats:GetAbilityID( "tyranids_wargear_broodlord_the_ymgarl_factor" )
+	end
+end
+
+function BroodLordTactic:DoAbilities()
+       local oUnit = Ability.Filters.CloseHurt(self.squad_ai:GetPosition(), 20, 2)
+       if (oUnit ~= nil and oUnit:IsInCombat() and cpu_manager:GetUnitStrength(oUnit) > 59) then
+          if (self.squad_ai:CanDoAbility(BroodLord.despair_id)) then
+          self.squad_ai:DoSpecialAbility(BroodLord.despair_id)
+          end
+       end
+
+         if (self.squad_ai:CanDoAbility(BroodLord.gaze_id) and self.squad_ai:IsInCombat()) then
+        Ability.DoAbilityTarget( self.squad_ai, BroodLord.gaze_id, Ability.Filters.CloseEnemy, 4 ) 
+        Ability.DoAbilityTarget( self.squad_ai, BroodLord.gaze_id, Ability.Filters.CloseMonsterEnemy, 4 ) 
+        Ability.DoAbilityTarget( self.squad_ai, BroodLord.gaze_id, Ability.Filters.CloseCommanderEnemy, 1 ) 
+         end
+
+end
+function BroodLordTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+end

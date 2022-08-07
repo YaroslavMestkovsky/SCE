@@ -1,0 +1,168 @@
+----------------------------------------
+-- File: 'chaplaintactic.ai'
+-- Edited by Thudmeizer @ 04.03.2016
+-- Edited by Cylarne_04 2011
+
+class 'ChaplainTactic' (SpaceMarineInfantryTactic)
+
+Chaplain = {}
+
+function ChaplainTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Chaplain Tactic")
+end
+
+function ChaplainTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function ChaplainTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+-- Chaplain is allowed to retreat even directly after a jump
+function ChaplainTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+-- Arkhan 03.2006: Inherited method used by commanders which are able to jump with an attached squad
+function ChaplainTactic:CanJumpAttached()
+	return true
+end
+
+function ChaplainTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (Chaplain.demoralize_id == nil) then
+		Chaplain.demoralize_id = cpu_manager.stats:GetAbilityID( "marines_demoralize" )
+	end
+
+	if (Chaplain.flashbang_id == nil) then
+		Chaplain.flashbang_id = cpu_manager.stats:GetAbilityID( "marines_flashbang_grenades" )	
+	end
+
+	if (Chaplain.frag_id == nil) then
+		Chaplain.frag_id = cpu_manager.stats:GetAbilityID( "marines_frag_grenades" )	
+	end
+
+	if (Chaplain.inferno_id == nil) then
+		Chaplain.inferno_id = cpu_manager.stats:GetAbilityID( "marines_inferno_grenades" )	
+	end
+
+	if (Chaplain.krak_id == nil) then
+		Chaplain.krak_id = cpu_manager.stats:GetAbilityID( "marines_krak_grenades" )	
+	end
+
+	if (Chaplain.melta_id == nil) then
+		Chaplain.melta_id = cpu_manager.stats:GetAbilityID( "marines_melta_bombs" )	
+	end
+
+	if (Chaplain.smoke_id == nil) then
+		Chaplain.smoke_id = cpu_manager.stats:GetAbilityID( "marines_smoke_grenades" )	
+	end
+
+	if (Chaplain.run_id == nil) then
+		Chaplain.run_id = cpu_manager.stats:GetAbilityID( "all_run!" )	
+	end
+end
+
+function ChaplainTactic:DoAbilities()
+	
+	-- If we are dying, lower requisites for attacks
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+		Ability.DoAbilityTarget( self.squad_ai, Chaplain.demoralize_id, Ability.Filters.CloseInfantryEnemy, 4 )
+	else
+		Ability.DoAbilityTarget( self.squad_ai, Chaplain.demoralize_id, Ability.Filters.CloseInfantryEnemy, 8 )
+	end
+
+        Ability.DoAbilityTarget( self.squad_ai, Chaplain.flashbang_id, Ability.Filters.CloseSquadEnemy, 4)
+        Ability.DoAbilityTarget( self.squad_ai, Chaplain.frag_id, Ability.Filters.CloseSquadEnemy, 2)
+        Ability.DoAbilityTarget( self.squad_ai, Chaplain.inferno_id, Ability.Filters.CloseSquadEnemy, 3)
+        Ability.DoAbilityTarget( self.squad_ai, Chaplain.krak_id, Ability.Filters.CloseVehicleEnemy, 1)
+        Ability.DoAbilityTarget( self.squad_ai, Chaplain.melta_id, Ability.Filters.CloseVehicleEnemy, 1)
+
+	-- Search a squad to launch smoke grenades
+	local iRange = self.squad_ai:GetAbilityRange(Chaplain.smoke_id)
+	local oUnit = Ability.Filters.CloseHurt(self.squad_ai:GetPosition(), iRange, 1)
+	if (oUnit ~= nil and oUnit:IsInCombat() and cpu_manager:GetUnitStrength(oUnit) > 150) then
+		self.squad_ai:DoSpecialAbilitySquad(Chaplain.smoke_id, oUnit:GetSquad())
+	end
+
+	-- Run if safe
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.stateID ~= Tactic.StateID.NoState) then
+
+		-- If I am safe I can run
+		if (self.squad_ai:CanDoAbility( Chaplain.run_id )) then
+			self.squad_ai:DoSpecialAbility( Chaplain.run_id )
+		end
+	end
+end
+--[[
+function ChaplainTactic:Upgrade()
+
+--	self:AutoBuildAddOn(0)	--	[addon_01] space_marine_commander_plasma_pistol_addon
+--	self:AutoBuildAddOn(1)	--	[addon_02] space_marine_commander_bolter_addon
+--	self:AutoBuildAddOn(2)	--	[addon_03] space_marine_commander_storm_bolter_addon
+--	self:AutoBuildAddOn(3)	--	[addon_04] space_marine_commander_powerfist_addon
+
+	-- Figure out my enemy's favourite class
+	local enemy = cpu_manager:FindClosestEnemyPlayer()
+	if (enemy == nil) then
+		return
+	end
+	
+	local class_type = enemy:GetMajorityClassType()
+	
+	-- Hard counter upgrade for infantry
+	if (class_type == UnitStatsAI.UC_LightInfantryLow) or 
+		(class_type == UnitStatsAI.UC_LightInfantryMed) or 
+		(class_type == UnitStatsAI.UC_LightInfantryHigh) or
+		(class_type == UnitStatsAI.UC_HeavyInfantryMed) or
+		(class_type == UnitStatsAI.UC_MonsterMed) then 
+   		if (cpu_manager:GetTierLevel() >= 2) then 
+			local addon_random_infantry_wargear = math.random( 0,1 )
+			self:AutoBuildAddOn(addon_random_infantry_wargear )	-- Randomize between Plasm Pistol and Bolter weapons
+		end
+	-- Hard counter upgrade for Vehicles
+	elseif (class_type == UnitStatsAI.UC_HeavyInfantryHigh) or
+		(class_type == UnitStatsAI.UC_VehicleLow) or 
+		(class_type == UnitStatsAI.UC_VehicleMed) or
+		(class_type == UnitStatsAI.UC_VehicleHigh) or
+		(class_type == UnitStatsAI.UC_MonsterHigh) then
+   		if (cpu_manager:GetTierLevel() >= 2) then 
+			local addon_random_vehicle_wargear = math.random( 2,3 )
+			self:AutoBuildAddOn(addon_random_vehicle_wargear )	-- Randomize between Storbolter and PowerFist weapons
+		end
+	end
+end]]
+
+function ChaplainTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update(self)) then
+		return
+	end
+	
+	-- Attach to melee in tier2+
+	if (cpu_manager:GetTierLevel() > 1) then
+	
+		if (self:TryAttachSquad(true, true, 50, 100, nil) ~= nil) then
+			return
+		end
+	end
+	if (self:TryAttachSquad(false, true, 50, 100, self.m_fCommanderAttachHealth) == nil) then
+		self:TryAttachSquadMelee()
+	end
+
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end
+

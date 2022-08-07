@@ -1,0 +1,86 @@
+----------------------------------------
+-- File: 'warbosstactic.ai'
+-- Edited by Thudmeizer @ 23.02.2016
+-- Edited by LarkinVB   @ 31.07.2005
+
+class 'WarBossTactic' (OrkInfantryTactic)
+
+WarBoss = {}
+
+function WarBossTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("WarBoss Tactic")
+end
+
+function WarBossTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function WarBossTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+function WarBossTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (WarBoss.power_id == nil) then
+		WarBoss.power_id = cpu_manager.stats:GetAbilityID( "ork_power_of_waagh" )
+	end
+	if (WarBoss.nuke_id == nil) then
+		WarBoss.nuke_id = cpu_manager.stats:GetAbilityID( "ork_commander_bomb" )
+	end
+	if (WarBoss.waagh_id == nil) then
+		WarBoss.waagh_id = cpu_manager.stats:GetAbilityID( "ork_waagh!!!" )
+	end
+	if (WarBoss.run_id == nil) then
+		WarBoss.run_id = cpu_manager.stats:GetAbilityID( "all_run!" )
+	end
+end
+
+function WarBossTactic:DoAbilities()
+
+	Ability.DoAbilityArea( self.squad_ai, WarBoss.power_id, Ability.Filters.CloseEnemy, 20, 5 ) 
+
+	-- Try to place bomb
+	Ability.DoAbilityPos(self.squad_ai, WarBoss.nuke_id, Ability.Filters.CloseEnemy, 24)
+	Ability.DoAbilityPos(self.squad_ai, WarBoss.nuke_id, Ability.EntityFilters.CloseBaseEntityEnemy, 3)
+
+	-- Charge if in combat and enemy is not adjacent or while broken
+	-- Don't waagh if health is too low or we are not moving !
+	local squad_pos = self.squad_ai:GetPosition()
+	if (((self.squad_ai:IsInCombat() and Ability.Filters.CloseEnemy( squad_pos, 20, 1 ) == nil) or
+	   	self.squad_ai:IsBroken()) and self.squad_ai:GetHealthPercentage() > 0.8 and self:IsMoving()) then 
+		if (self.squad_ai:CanDoAbility(WarBoss.waagh_id)) then
+			self.squad_ai:DoSpecialAbility(WarBoss.waagh_id)
+		end
+	end
+
+	-- Check to make sure if no threats are nearby
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.stateID ~= Tactic.StateID.NoState) then
+
+		-- If I am safe I can run
+		if (self.squad_ai:CanDoAbility( WarBoss.run_id )) then
+			self.squad_ai:DoSpecialAbility( WarBoss.run_id )
+		end
+	end
+end
+
+function WarBossTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+	
+	-- Attach to melee
+	if (self:TryAttachSquad(true, true, 50, 100, nil) == nil) then
+	
+		if (self:TryAttachSquad(false, false, 50, 100, self.m_fCommanderAttachHealth) == nil) then
+			self:TryAttachSquadMelee()
+		end
+	end
+end

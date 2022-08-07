@@ -1,0 +1,32 @@
+----------------------------------------
+-- File: 'gknightprimary.ai'
+-- Edited by Aliaska_RuS 
+
+class 'GKnightPrimaryTactic' (GKnightsTactic)
+
+GKnightPrimary = {}
+
+function GKnightPrimaryTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("GK Primary Tactic")
+end
+
+function GKnightPrimaryTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+  
+    if (cpu_manager:GetTierLevel() >= 1 and self.squad_ai:GetMeleeStance() ~= SquadAI.MSTANCE_Assault and cpu_manager:GetTierLevel() < 3) then
+    	self.squad_ai:DoSetMeleeStance(SquadAI.MSTANCE_Assault)
+    end
+	
+	if (cpu_manager:GetTierLevel() >= 3 and self.squad_ai:GetMeleeStance() ~= SquadAI.MSTANCE_Ranged) then
+    	self.squad_ai:DoSetMeleeStance(SquadAI.MSTANCE_Ranged)
+    end
+end

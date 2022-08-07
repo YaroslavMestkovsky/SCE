@@ -1,0 +1,74 @@
+----------------------------------------
+-- File: 'daemonsprincekhornetactic.ai'
+-- Edited by Thudmeizer @ 08.05.2016
+
+class 'DaemonsPrinceKhorneTactic' (DaemonsInfantryTactic)
+
+DaemonsPrinceKhorne = {}
+
+function DaemonsPrinceKhorneTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Daemons Prince Khorne Tactic")
+end
+
+function DaemonsPrinceKhorneTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function DaemonsPrinceKhorneTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+-- Daemon Prince is allowed to retreat even directly after a jump
+function DaemonsPrinceKhorneTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+function DaemonsPrinceKhorneTactic:JumpAttack()
+	Tactic.JumpAttack(self)
+end
+
+function DaemonsPrinceKhorneTactic:InitAbilities()
+
+	-- Init ability ID's	
+	if (DaemonsPrinceKhorne.fear_id == nil) then
+		DaemonsPrinceKhorne.fear_id = cpu_manager.stats:GetAbilityID( "daemons_fear_roar" )	
+	end
+	
+	if (DaemonsPrinceKhorne.blood_id == nil) then
+		DaemonsPrinceKhorne.blood_id = cpu_manager.stats:GetAbilityID( "daemons_mark_of_blood" )	
+	end
+end
+
+function DaemonsPrinceKhorneTactic:DoAbilities()
+	
+	-- If we are dying, lower requisites for attacks
+	if ( self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4 ) then
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceKhorne.fear_id, Ability.Filters.CloseSquadEnemy, 3 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceKhorne.fear_id, Ability.Filters.CloseMonsterEnemy, 3 )
+		Ability.DoAbilityArea( self.squad_ai, DaemonsPrinceKhorne.blood_id, Ability.Filters.CloseEnemy, 15, 4 )
+	else
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceKhorne.fear_id, Ability.Filters.CloseSquadEnemy, 6 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceKhorne.fear_id, Ability.Filters.CloseMonsterEnemy, 6 )
+		Ability.DoAbilityArea( self.squad_ai, DaemonsPrinceKhorne.blood_id, Ability.Filters.CloseEnemy, 15, 8 )
+	end
+end
+
+function DaemonsPrinceKhorneTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+	
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end

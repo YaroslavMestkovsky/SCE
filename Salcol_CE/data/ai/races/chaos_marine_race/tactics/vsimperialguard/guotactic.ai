@@ -1,0 +1,39 @@
+----------------------------------------
+-- File: 'guotactic.ai'
+-- Edited by Thudmeizer	@ 17.02.2016
+-- Edited by Cylarne_04 2011
+
+class 'GUOTactic' (ChaosMarineInfantryTactic)
+
+GUO = {}
+
+function GUOTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("GUO Tactic")
+end
+
+function GUOTactic:AlwaysAttack()
+	return true
+end
+
+function GUOTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (GUO.Puke_id == nil) then
+		GUO.Puke_id = cpu_manager.stats:GetAbilityID( "chaos_guo_puke" )
+	end
+	if (GUO.Spit_id == nil) then
+		GUO.Spit_id = cpu_manager.stats:GetAbilityID( "chaos_guo_spit" )
+	end
+end
+
+function GUOTactic:DoAbilities()
+
+	Ability.DoAbilityPos( self.squad_ai, GUO.Puke_id, Ability.Filters.CloseEnemy, 6 )
+	Ability.DoAbilityPos( self.squad_ai, GUO.Puke_id, Ability.EntityFilters.CloseBaseEntityEnemy, 3)
+	Ability.DoAbilityPos( self.squad_ai, GUO.Spit_id, Ability.Filters.CloseEnemy, 8 )
+	Ability.DoAbilityPos( self.squad_ai, GUO.Spit_id, Ability.EntityFilters.CloseBaseEntityEnemy, 3)
+
+	-- Call basic DoAbilities methods
+	ChaosMarineInfantryTactic.DoAbilities(self)
+end

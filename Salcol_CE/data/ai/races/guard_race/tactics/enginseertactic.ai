@@ -1,0 +1,53 @@
+----------------------------------------
+-- File: 'enginseertactic.ai'
+-- Edited by Arkhan 	@ 10.01.2007
+-- Edited by Thudmeizer	@ 13.09.2016
+
+class 'EnginseerTactic' (EngineerTactic)
+
+Enginseer = {}
+
+function EnginseerTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Enginseer Tactic")
+	
+	-- Squad is NOT able to occupy bunkers, nope
+	self.m_bBunkerSquad = true
+end
+
+function EnginseerTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (Enginseer.run_id == nil) then
+		Enginseer.run_id = cpu_manager.stats:GetAbilityID( "all_run!" )	
+	end
+end
+
+function EnginseerTactic:DoAbilities()
+	-- Run if safe
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.stateID ~= Tactic.StateID.NoState) then
+
+		-- If I am safe I can run
+		if (self.squad_ai:CanDoAbility( Enginseer.run_id )) then
+			self.squad_ai:DoSpecialAbility( Enginseer.run_id )
+		end
+	end
+end
+
+function EnginseerTactic:Update()
+
+	if self:IsComplete() then
+		return
+	end
+    
+	-- Update engineer tactic
+	--EngineerTactic.Update(self)
+
+	-- State machine
+	if not EngineerTactic.Update( self ) then
+		return
+	end
+
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end

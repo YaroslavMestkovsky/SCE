@@ -1,0 +1,84 @@
+----------------------------------------
+-- File: 'officemaletactic.ai'
+-- Edited by Thudmeizer @ 27.02.2016
+
+class 'OfficerMaleTactic' (GuardInfantryTactic)
+
+OfficerMale = {}
+
+function OfficerMaleTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Office Male Tactic")
+
+	-- Squad is able to occupy bunkers
+	self.m_bBunkerSquad = true
+
+	-- Init execute delay time
+	OfficerMale.NextExecuteCheck = 0
+end
+
+function OfficerMaleTactic:IsAttacker()	
+	return self:IsCommanderAttacker()
+end
+
+function OfficerMaleTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+function OfficerMaleTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (OfficerMale.live_id == nil) then
+		OfficerMale.live_id = cpu_manager.stats:GetAbilityID( "guard_commissar_lord_live_forever" )	
+	end
+
+        if (OfficerMale.immortal_id == nil) then
+		OfficerMale.immortal_id = cpu_manager.stats:GetAbilityID( "guard_commissar_lord_immortal" )	
+	end
+
+        if (OfficerMale.weapon_id == nil) then
+		OfficerMale.weapon_id = cpu_manager.stats:GetAbilityID( "guard_commissar_lord_weapon" )	
+	end
+end
+
+function OfficerMaleTactic:DoAbilities()
+
+        Ability.DoAbility( self.squad_ai, OfficerMale.weapon_id, Ability.Filters.IsInCombat )
+	
+	if (self.squad_ai:IsBroken()) then
+		-- Check if I can repair my morale
+		if (self.squad_ai:CanDoAbility( OfficerMale.live_id )) then
+			self.squad_ai:DoSpecialAbility( OfficerMale.live_id )
+		end
+	end
+
+        if (self.squad_ai:GetHealthPercentage() <= 0.2) then
+                if (self.squad_ai:CanDoAbility( OfficerMale.immortal_id )) then
+			self.squad_ai:DoSpecialAbility( OfficerMale.immortal_id )
+		end
+	end
+	
+end
+
+function OfficerMaleTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update(self)) then
+		return
+	end
+	
+	-- Attach to melee in tier3+
+	if (cpu_manager:GetTierLevel() > 2) then
+	
+		if (self:TryAttachSquad(true, true, 50, 100, nil) ~= nil) then
+			return
+		end
+	end
+	if (self:TryAttachSquad(false, true, 50, 100, self.m_fCommanderAttachHealth) == nil) then
+		self:TryAttachSquadMelee()
+	end
+end

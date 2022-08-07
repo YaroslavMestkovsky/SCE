@@ -1,0 +1,62 @@
+----------------------------------------
+-- File: 'daemonsprincenurgletactic.ai'
+-- Edited by Thudmeizer @ 08.05.2016
+
+class 'DaemonsPrinceNurgleTactic' (DaemonsInfantryTactic)
+
+DaemonsPrinceNurgle = {}
+
+function DaemonsPrinceNurgleTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Daemons Prince Nurgle Tactic")
+end
+
+function DaemonsPrinceNurgleTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function DaemonsPrinceNurgleTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+function DaemonsPrinceNurgleTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (DaemonsPrinceNurgle.fear_id == nil) then
+		DaemonsPrinceNurgle.fear_id = cpu_manager.stats:GetAbilityID( "daemons_fear_roar" )	
+	end
+		
+	if (DaemonsPrinceNurgle.rot_id == nil) then
+		DaemonsPrinceNurgle.rot_id = cpu_manager.stats:GetAbilityID( "daemons_nurgles_rot_prince" )	
+	end
+end
+
+function DaemonsPrinceNurgleTactic:DoAbilities()
+
+	-- If we are dying, lower requisites for attacks
+	if ( self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4 ) then
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceNurgle.fear_id, Ability.Filters.CloseSquadEnemy, 3 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceNurgle.fear_id, Ability.Filters.CloseMonsterEnemy, 3 )
+		Ability.DoAbilityArea( self.squad_ai, DaemonsPrinceNurgle.rot_id, Ability.Filters.CloseSquadEnemy, 10, 4 )
+	else
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceNurgle.fear_id, Ability.Filters.CloseSquadEnemy, 6 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceNurgle.fear_id, Ability.Filters.CloseMonsterEnemy, 6 )
+		Ability.DoAbilityArea( self.squad_ai, DaemonsPrinceNurgle.rot_id, Ability.Filters.CloseSquadEnemy, 10, 8 )
+	end
+end
+
+function DaemonsPrinceNurgleTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+	
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end
+

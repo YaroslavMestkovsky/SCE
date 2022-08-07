@@ -1,0 +1,32 @@
+----------------------------------------
+-- File: 'librariumtactic.ai'
+-- Edited by Thudmeizer         @ 09.06.2016
+
+class 'LibrariumTactic' (BaseTactic)
+
+Librarium = {}
+
+function LibrariumTactic:__init( base_ai ) super( base_ai )
+
+	self:SetName("Librarium Tactic")
+end
+
+function LibrariumTactic:InitAbilities()
+
+	-- Init abilities
+	if (Librarium.repair_id == nil) then
+        	Librarium.repair_id = cpu_manager.stats:GetAbilityID( "all_autorepair" )
+    	end
+
+end
+
+function LibrariumTactic:DoAbilities()
+
+    	-- Base Repair!
+	if (self.base_ai:WasRecentlyHurt() and self.base_ai:GetHealthPercentage() < 0.6) then
+
+		if (self.base_ai:CanDoAbility( Librarium.repair_id )) then
+           		self.base_ai:DoSpecialAbility( Librarium.repair_id )
+       		end
+	end
+end

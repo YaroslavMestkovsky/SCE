@@ -1,0 +1,75 @@
+----------------------------------------
+-- File: 'krootknarlocridertactic.ai'
+-- Edited by Thudmeizer @ 17.03.2016
+-- Edited by Aliaska_RuS 22.02.2021
+
+class 'KrootKnarlocRiderTactic' (TauInfantryTactic)
+
+KrootKnarlocRider = {}
+
+function KrootKnarlocRiderTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Kroot Knarloc Rider Tactic")
+end
+
+function KrootKnarlocRiderTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (KrootKnarlocRider.charge_id == nil) then
+		KrootKnarlocRider.charge_id = cpu_manager.stats:GetAbilityID( "tau_bumpertank_kroot" )	
+	end
+
+	if (KrootKnarlocRider.devour_id == nil) then
+		KrootKnarlocRider.devour_id = cpu_manager.stats:GetAbilityID( "tau_devour" )	
+	end
+
+	if (KrootKnarlocRider.run_id == nil) then
+		KrootKnarlocRider.run_id = cpu_manager.stats:GetAbilityID( "all_run!" )	
+	end
+end
+
+function KrootKnarlocRiderTactic:DoAbilities()
+
+	-- Charge: For a duration, all kroot charging at the enemy will gain a 100% movement speed bonus with a medium knockback range wherever the units may go.
+	if (self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) then
+		self.squad_ai:DoSpecialAbility( KrootKnarlocRider.charge_id )
+	end
+
+	-- Hunt: For a duration, the squad gains a boost in sight, keen sight, movement speed, and morale bonuses.
+	if (self.squad_ai:CanDoAbility( KrootKnarlocRider.devour_id )) then
+		Ability.DoAbilityArea(self.squad_ai, KrootKnarlocRider.devour_id, Ability.Filters.CloseEnemy, 20, 4)
+		Ability.DoAbilityArea(self.squad_ai, KrootKnarlocRider.devour_id, Ability.Filters.CloseInfiltratedEnemy, 30, 1)
+	end
+
+	-- Run if safe
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.stateID ~= Tactic.StateID.NoState) then
+
+		-- If I am safe I can run
+		if (self.squad_ai:CanDoAbility( KrootKnarlocRider.run_id )) then
+			self.squad_ai:DoSpecialAbility( KrootKnarlocRider.run_id )
+		end
+	end
+end
+
+function KrootKnarlocRiderTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update(self)) then
+		return
+	end
+	
+	-- Attach to melee in tier3+
+	if (cpu_manager:GetTierLevel() > 2) then
+	
+		if (self:TryAttachSquad(true, true, 50, 100, nil) ~= nil) then
+			return
+		end
+	end
+	if (self:TryAttachSquad(false, true, 50, 100, self.m_fCommanderAttachHealth) == nil) then
+		self:TryAttachSquadMelee()
+	end
+end

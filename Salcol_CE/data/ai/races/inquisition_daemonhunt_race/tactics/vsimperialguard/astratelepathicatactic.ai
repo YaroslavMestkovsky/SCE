@@ -1,0 +1,84 @@
+----------------------------------------
+-- File: 'sistersredemptionisttactic.ai'
+-- Edited by Thudmeizer @ 07.06.2016
+
+class 'SistersRedemptionistTactic' (SistersInfantryTactic)
+
+SistersRedemptionist = {}
+
+function SistersRedemptionistTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Sisters Redemptionist Tactic")
+end
+
+-- Redemptionists are allowed to retreat even directly after a jump
+function SistersRedemptionistTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+function SistersRedemptionistTactic:JumpAttack()
+	Tactic.JumpAttack(self)
+end
+
+function SistersRedemptionistTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (SistersRedemptionist.flashbang_id == nil) then
+		SistersRedemptionist.flashbang_id = cpu_manager.stats:GetAbilityID( "sisters_flashbang_grenades" )
+	end
+
+	if (SistersRedemptionist.krak_id == nil) then
+		SistersRedemptionist.krak_id = cpu_manager.stats:GetAbilityID( "sisters_krak_grenades" )
+	end
+
+	if (SistersRedemptionist.phosphor_id == nil) then
+		SistersRedemptionist.phosphor_id = cpu_manager.stats:GetAbilityID( "sisters_phosphor_grenades" )
+	end
+
+	if (SistersRedemptionist.smoke_id == nil) then
+		SistersRedemptionist.smoke_id = cpu_manager.stats:GetAbilityID( "sisters_smoke_grenades" )
+	end
+
+	if (SistersRedemptionist.invulnerability_id == nil) then
+		SistersRedemptionist.invulnerability_id = cpu_manager.stats:GetAbilityID( "sisters_act_of_faith_invulnerability_legatine_superiors" )
+	end
+
+	if (SistersRedemptionist.run_id == nil) then
+		SistersRedemptionist.run_id = cpu_manager.stats:GetAbilityID( "all_run!" )	
+	end
+end
+
+function SistersRedemptionistTactic:DoAbilities()
+
+	-- Throw flashbang grenades!
+	if (self.squad_ai:CanDoAbility( SistersRedemptionist.flashbang_id )) then
+		Ability.DoAbilityPos( self.squad_ai, SistersRedemptionist.flashbang_id, Ability.Filters.CloseSquadEnemy, 4 )
+		Ability.DoAbilityPos( self.squad_ai, SistersRedemptionist.flashbang_id, Ability.Filters.CloseCommanderEnemy, 1 )
+		Ability.DoAbilityPos( self.squad_ai, SistersRedemptionist.flashbang_id, Ability.Filters.CloseMonsterEnemy, 2 )
+	end
+
+	-- Throw krak grenades!
+	if (self.squad_ai:CanDoAbility( SistersRedemptionist.krak_id )) then
+		Ability.DoAbilityTarget( self.squad_ai, SistersRedemptionist.krak_id, Ability.Filters.CloseVehicleEnemy, 1 )
+		Ability.DoAbilityTargetEntity( self.squad_ai, SistersRedemptionist.krak_id, Ability.EntityFilters.CloseBaseEntityEnemy, 1 )
+	end
+
+	-- Throw phosphor grenades!
+	if (self.squad_ai:CanDoAbility( SistersRedemptionist.phosphor_id )) then
+		Ability.DoAbilityPos( self.squad_ai, SistersRedemptionist.phosphor_id, Ability.EntityFilters.CloseBaseEntityEnemy, 1 )
+		Ability.DoAbilityPos( self.squad_ai, SistersRedemptionist.phosphor_id, Ability.Filters.CloseMonsterEnemy, 2 )
+		Ability.DoAbilityPos( self.squad_ai, SistersRedemptionist.phosphor_id, Ability.Filters.CloseInfantryEnemy, 4 )
+	end
+
+	-- Check if we can launch smoke
+	if (self.squad_ai:CanDoAbility( SistersRedemptionist.smoke_id )) then
+	
+		-- Search a squad
+		local iRange = self.squad_ai:GetAbilityRange( SistersRedemptionist.smoke_id )
+		local oUnit = Ability.Filters.CloseHurt(self.squad_ai:GetPosition(), iRange, 1)
+		if (oUnit ~= nil and oUnit:IsInCombat() and cpu_manager:GetUnitStrength(oUnit) > 150) then
+			self.squad_ai:Do

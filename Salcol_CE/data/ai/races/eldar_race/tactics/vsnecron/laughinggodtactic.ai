@@ -1,0 +1,32 @@
+----------------------------------------
+-- File: 'laughinggodtactic.ai'
+-- Edited by Thudmeizer @ 20.04.2016
+
+class 'LaughingGodTactic' (EldarInfantryTactic)
+
+LaughingGod = {}
+
+function LaughingGodTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Laughing God Tactic")
+end
+
+function LaughingGodTactic:AlwaysAttack()
+	return true
+end
+
+function LaughingGodTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (LaughingGod.laughter_id == nil) then
+		LaughingGod.laughter_id = cpu_manager.stats:GetAbilityID( "eldar_laughter_of_death" )
+	end
+end
+
+function LaughingGodTactic:DoAbilities()
+
+	Ability.DoAbilityArea( self.squad_ai, LaughingGod.laughter_id, Ability.Filters.CloseEnemy, 10, 5 )
+
+	-- Call basic DoAbilities methods
+	EldarInfantryTactic.DoAbilities(self)
+end

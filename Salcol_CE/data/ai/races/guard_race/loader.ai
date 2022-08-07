@@ -1,0 +1,245 @@
+----------------------------------------
+-- File: 'guardloader.ai'
+-- Edited by Arkhan	@ 23.10.2006
+-- Edited by Thudmeizer @ 23.09.2016
+-- Renamed by Corsix    @ 13.02.2006
+-- Edited by Cylarne_04 2011
+-- Edited by Aliaska_RuS
+
+class 'guard_race'
+
+-- Constructor
+function guard_race:__init()
+
+end
+
+-- Returns the name of the race
+function guard_race:GetRaceName()
+	return "guard_race"
+end
+
+-- This function is called if guard are the race being played
+function guard_race:LoadRace( eDifficulty )
+
+	-- Import strategies
+	-- Import strategy info
+	-- Import tactics
+	import( "Races/guard_race/ImperialGuardLoad.ai" )
+
+	return true
+end
+
+-- This function is called even if guard are not the race being played
+function guard_race:LoadGlobalInfo()
+
+	-- Import info files
+	import( 'Races/guard_race/Info/guardunitstats.ai' )
+	
+	-- Add guard unit stats
+	table.insert(UnitStats, GuardUnitStats)
+	return true
+end
+
+-- Creates build base strategy
+function guard_race:CreateBuildBaseStrategy()
+	return GuardBuildBaseStrategy(BuildBaseStrategyInfo)
+end
+
+-- Creates a special tactic for a guard unit
+function guard_race:CreateTactic(oSquadAI)
+
+	-- Get unit name and class
+	local sUnitName = oSquadAI:GetSquadName()
+	local eClass = oSquadAI:GetStats():GetClass()
+	
+	-- Check if there is a special tactic for the unit available
+	if (sUnitName == "guard_squad_enginseer") then
+		return EnginseerTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_guardsmen_conscript") then
+		return ConscriptTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_guardsmen") then
+		return GuardSquadTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_guardsmen_rider") then
+		return RoughRiderTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_guardsmen_specialweapons") then
+		return SpecialWeaponsTactic(oSquadAI)
+	elseif (sUnitName == "guard_heavy_weapons_team_support_squad") then
+		return HeavyWeaponsTactic(oSquadAI)
+	elseif (sUnitName == "guard_heavy_weapons_team_squad") or (sUnitName == "guard_heavy_weapon_team_entrenched_squad_sp") then
+		return HeavyWeaponsTeamTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_commissar_cadet") then
+		return CommissarCadetTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_ogryns") then
+		return OgrynTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_kasrkin") then
+		return KasrkinTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_stormtrooper") then
+		return StormtrooperTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_master_vox") then
+		return MasterVoxTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_banner_bearer") then
+		return BannerBearerTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_field_medic") then
+		return MedicTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_assassin") then
+		return AssassinTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_commissar") then
+		return CommissarTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_psyker") then
+		return PsykerTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_command_squad_psykers") then
+		return PsykerCommandSquadTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_priest") then
+		return PriestTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_command_squad_colonel") then
+		return ColonelTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_lieutenant_squad") then
+		return OfficerMaleTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_officer_support_squad") then
+		return OfficerFemaleTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_command_squad") or (sUnitName == "npc_squad_civilian_group") then
+		return CommandSquadTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_convoy_sp_dxp3") then
+		return ConvoyTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_sentinel") then
+		return SentinelTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_chimera") then
+		return ChimeraTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_chimera_kronus") then
+		return ChimeraKronusTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_hellhound") or (sUnitName == "guard_squad_lemanruss_inferno") then
+		return HellhoundTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_marauder") then
+		return MarauderTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_marauder_vigilant") then
+		return VigilantTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_valkyrie_transport") then
+		return ValkyrieTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_vulture") then
+		return VultureTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_basilisk") then
+		return BasiliskTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_deathstrike_missile_launcher") then
+		return DeathstrikeTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_lemanruss_vanquisher_command") then
+		return VanquisherCommandTactic(oSquadAI)
+	elseif (sUnitName == "guard_vehicles_shadowsword") then
+		return ShadowswordTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_stormlord") then
+		return StormlordTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_firesword") then
+		return FireswordTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_warhound_titan") or (sUnitName == "guard_squad_reaver_titan") or (sUnitName == "guard_squad_reaver_lucius_full_titan") or (sUnitName == "guard_squad_warlord_titan_aio") then
+		return TitanTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_reaver_titan_captain") then
+		return ReaverCaptainTactic(oSquadAI)
+	elseif (sUnitName == "guard_squad_imperator_titan") then
+		return ImperatorTactic(oSquadAI)
+	elseif (eClass == UnitStatsAI.UC_VehicleLow or eClass == UnitStatsAI.UC_VehicleMed or eClass == UnitStatsAI.UC_VehicleHigh) or
+	       (eClass == UnitStatsAI.UC_AirLow or eClass == UnitStatsAI.UC_AirMed or eClass == UnitStatsAI.UC_AirHigh) then
+		return GuardVehicleTactic(oSquadAI)
+	end	
+	return GuardInfantryTactic(oSquadAI)
+end
+
+-- Creates a base tactic
+function guard_race:CreateBaseTactic(oBuilding)
+
+	-- Get building name
+	local sBuildingName = oBuilding:GetBaseName()
+	
+	-- Check if their is a special tactic for the building available
+	if (sBuildingName == "guard_hq") then
+		return GuardHQTactic(oBuilding)
+	elseif (sBuildingName == "guard_comms_array") then
+		return GuardArrayTactic(oBuilding)
+	elseif (sBuildingName == "guard_mars_pattern") then
+		return GuardMarsPatternTactic(oBuilding)
+	elseif (sBuildingName == "guard_nuclear_facility") then
+		return GuardNuclearFacilityTactic(oBuilding)
+	elseif (sBuildingName == "guard_listening_post") or 
+		(sBuildingName == "guard_infantry") or 
+		(sBuildingName == "guard_mechanized") or 
+		(sBuildingName == "guard_industry") or 
+		(sBuildingName == "guard_tanks") then
+		return GuardBunkerTactic(oBuilding)
+	elseif (sBuildingName == "guard_basilisk_magnus") then
+		return GuardBasiliskMagnusTactic(oBuilding)
+	elseif (sBuildingName == "guard_plasma_generator") or 
+		(sBuildingName == "guard_tactica") or 
+		(sBuildingName == "guard_titan_facility") or 
+	        (sBuildingName == "guard_turret_heavy_bolter") or 
+		(sBuildingName == "guard_wall") or 
+		(sBuildingName == "guard_wall_fortified") then
+		return GuardBuildingTactic(oBuilding)
+	--elseif (sBuildingName == "guard_turret_heavy_bolter") then 
+		--return GuardBolterTurretTactic(oBuilding)
+	elseif (sBuildingName == "guard_turret_missile_launcher_sp") then 
+		return GuardTurretTactic(oBuilding)
+	elseif (sBuildingName == "guard_thermo_plasma") or (sBuildingName == "guard_thermonuclear_generator") then
+		return GuardBigGeneratorTactic(oBuilding)
+	end
+	return nil
+end
+
+-- Returns a specific information
+function guard_race:GetInfo(sType)
+
+	-- Check info type
+	if (sType == "TurretPower") then
+		return 300
+	elseif (sType == "SupportAllyFactor") then
+		return 7 / 4
+	elseif (sType == "AttackModifier") then
+		return 10
+	elseif (sType == "CriticalRangeIncreasePerTier") then
+		return 10
+	elseif (sType == "MinArmyStrengthPerTier") then
+		return 700
+	elseif (sType == "AttackRatio") then
+		return 4 / 5
+	elseif (sType == "RetreatRatio") then
+		return 3 / 5
+	elseif (sType == "InvisibleBuildings") then
+		return false
+	elseif (sType == "HarassingLeader") then
+		return "guard_squad_lieutenant_squad"
+	elseif (sType == "AutoConstructBuildings") then
+		return false
+	end
+	return nil
+end
+
+-- Returns the building type and threat
+function guard_race:GetBuildingType(sBuildingName)
+
+	-- Return race specific object string
+	if (sBuildingName == "guard_hq") then
+		return "HQ", 400
+		
+	elseif (sBuildingName == "guard_plasma_generator") then
+		return "Generator", 0
+		
+	elseif (sBuildingName == "guard_thermo_plasma") then
+		return "BiggerGenerator", 0
+
+        elseif (sBuildingName == "guard_infantry") then
+                return "Barracks", 300
+		
+	elseif (sBuildingName == "guard_mechanized") then
+		return "VehicleBuilding", 50
+		
+	elseif (sBuildingName == "guard_tactica") then
+		return "Armoury", 0
+		
+	elseif (sBuildingName == "guard_listening_post") then
+		return "ListeningPost", 1
+		
+	elseif (sBuildingName == "guard_turret_heavy_bolter") then
+		return "Turret", 30
+		
+	elseif (sBuildingName == "guard_mines") then
+		return "Mine", 30
+	end
+	return nil, 0
+end

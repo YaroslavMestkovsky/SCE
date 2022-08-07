@@ -1,0 +1,85 @@
+----------------------------------------
+-- File: 'daemonsprincetzeentchtactic.ai'
+-- Edited by Thudmeizer @ 08.05.2016
+
+class 'DaemonsPrinceTzeentchTactic' (DaemonsInfantryTactic)
+
+DaemonsPrinceTzeentch = {}
+
+function DaemonsPrinceTzeentchTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Daemons Prince Tzeentch Tactic")
+end
+
+function DaemonsPrinceTzeentchTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function DaemonsPrinceTzeentchTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+-- Daemon Prince is allowed to retreat even directly after a jump
+function DaemonsPrinceTzeentchTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+function DaemonsPrinceTzeentchTactic:JumpAttack()
+	Tactic.JumpAttack(self)
+end
+
+function DaemonsPrinceTzeentchTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (DaemonsPrinceTzeentch.fear_id == nil) then
+		DaemonsPrinceTzeentch.fear_id = cpu_manager.stats:GetAbilityID( "daemons_fear_roar" )	
+	end
+
+	if (DaemonsPrinceTzeentch.warptime_id == nil) then
+		DaemonsPrinceTzeentch.warptime_id = cpu_manager.stats:GetAbilityID( "daemons_warp_time_prince" )	
+	end
+
+	if (DaemonsPrinceTzeentch.warpfire_id == nil) then
+		DaemonsPrinceTzeentch.warpfire_id = cpu_manager.stats:GetAbilityID( "daemons_warpfire_loc" )	
+	end
+end
+
+function DaemonsPrinceTzeentchTactic:DoAbilities()
+
+	-- If we are dying, lower requisites for attacks
+	if ( self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4 ) then
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.fear_id, Ability.Filters.CloseSquadEnemy, 3 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.fear_id, Ability.Filters.CloseMonsterEnemy, 3 )
+		Ability.DoAbilityArea( self.squad_ai, DaemonsPrinceTzeentch.warptime_id, Ability.Filters.CloseEnemy, 15, 3 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.warpfire_id, Ability.Filters.CloseSquadEnemy, 2 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.warpfire_id, Ability.Filters.CloseMonsterEnemy, 2 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.warpfire_id, Ability.Filters.CloseCommanderEnemy, 1 )
+	else
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.fear_id, Ability.Filters.CloseSquadEnemy, 6 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.fear_id, Ability.Filters.CloseMonsterEnemy, 6 )
+		Ability.DoAbilityArea( self.squad_ai, DaemonsPrinceTzeentch.warptime_id, Ability.Filters.CloseEnemy, 15, 6 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.warpfire_id, Ability.Filters.CloseSquadEnemy, 4 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.warpfire_id, Ability.Filters.CloseMonsterEnemy, 4 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceTzeentch.warpfire_id, Ability.Filters.CloseCommanderEnemy, 1 )
+	end
+end
+
+function DaemonsPrinceTzeentchTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+	
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end
+

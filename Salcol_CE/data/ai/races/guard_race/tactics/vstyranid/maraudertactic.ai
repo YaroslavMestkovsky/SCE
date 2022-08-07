@@ -1,0 +1,12 @@
+----------------------------------------
+-- File: 'maraudertactic.ai'
+-- Edited by Thudmeizer @ 22.03.2008
+
+class 'MarauderTactic' (GuardVehicleTactic)
+
+Marauder = {}
+
+function MarauderTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Marauder Tactic")
+end

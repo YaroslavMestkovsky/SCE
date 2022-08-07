@@ -1,0 +1,29 @@
+yPos( self.squad_ai, SistersRepentia.flashbang_id, Ability.Filters.CloseMonsterEnemy, 2 )
+	end
+
+	-- Throw krak grenades!
+	if (self.squad_ai:CanDoAbility( SistersRepentia.krak_id )) then
+		Ability.DoAbilityTarget( self.squad_ai, SistersRepentia.krak_id, Ability.Filters.CloseVehicleEnemy, 1 )
+		Ability.DoAbilityTargetEntity( self.squad_ai, SistersRepentia.krak_id, Ability.EntityFilters.CloseBaseEntityEnemy, 1 )
+	end
+
+	-- Throw phosphor grenades!
+	if (self.squad_ai:CanDoAbility( SistersRepentia.phosphor_id )) then
+		Ability.DoAbilityPos( self.squad_ai, SistersRepentia.phosphor_id, Ability.EntityFilters.CloseBaseEntityEnemy, 1 )
+		Ability.DoAbilityPos( self.squad_ai, SistersRepentia.phosphor_id, Ability.Filters.CloseMonsterEnemy, 2 )
+		Ability.DoAbilityPos( self.squad_ai, SistersRepentia.phosphor_id, Ability.Filters.CloseInfantryEnemy, 4 )
+	end
+
+	-- Check if we can launch smoke
+	if (self.squad_ai:CanDoAbility( SistersRepentia.smoke_id )) then
+	
+		-- Search a squad
+		local iRange = self.squad_ai:GetAbilityRange( SistersRepentia.smoke_id )
+		local oUnit = Ability.Filters.CloseHurt(self.squad_ai:GetPosition(), iRange, 1)
+		if (oUnit ~= nil and oUnit:IsInCombat() and cpu_manager:GetUnitStrength(oUnit) > 150) then
+			self.squad_ai:DoSpecialAbilitySquad( SistersRepentia.smoke_id, oUnit:GetSquad() )
+		end
+	end
+
+	-- Run if safe
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.st

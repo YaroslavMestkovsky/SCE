@@ -1,0 +1,47 @@
+ility_id)) then
+			self.squad_ai:DoSpecialAbility(SistersNunciate.invulnerability_id) 
+		end
+	end
+
+	-- Try to place bomb
+	Ability.DoAbilityPos(self.squad_ai, SistersNunciate.bomb_id, Ability.Filters.CloseEnemy, 24)
+	Ability.DoAbilityPos(self.squad_ai, SistersNunciate.bomb_id, Ability.EntityFilters.CloseBaseEntityEnemy, 3)
+
+	-- Run if safe
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.stateID ~= Tactic.StateID.NoState) then
+
+		-- If I am safe I can run
+		if (self.squad_ai:CanDoAbility( SistersNunciate.run_id )) then
+			self.squad_ai:DoSpecialAbility( SistersNunciate.run_id )
+		end
+	end
+
+	-- Try to spawn Legatine Superiors
+	if (self.timedDirectSpawnAbility ~= nil) then
+		self.timedDirectSpawnAbility:Call()
+	else
+		SistersNunciateTactic.DoDirectSpawnAbility(self)
+	end
+end
+
+function SistersNunciateTactic:DoDirectSpawnAbility()
+
+	-- Spawn Legatine Superiors in combat
+	if (self.squad_ai:CanDirectSpawn()) then 
+		self.squad_ai:DoDirectSpawn()
+	end
+end
+
+function SistersNunciateTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+		
+	-- Attach to melee in tier3+
+	if (cpu_manager:GetTierLevel() > 2) then

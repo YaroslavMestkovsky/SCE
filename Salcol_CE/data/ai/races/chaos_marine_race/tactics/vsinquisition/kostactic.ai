@@ -1,0 +1,26 @@
+----------------------------------------
+-- File: 'kostactic.ai'
+-- Edited by Thudmeizer	@ 17.02.2016
+
+class 'KOSTactic' (ChaosMarineInfantryTactic)
+
+KOS = {}
+
+function KOSTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("KOS Tactic")
+end
+
+function KOSTactic:AlwaysAttack()
+	return true
+end
+
+function KOSTactic:InitAbilities()
+
+end
+
+function KOSTactic:DoAbilities()
+
+	-- Call basic DoAbilities methods
+	ChaosMarineInfantryTactic.DoAbilities(self)
+end

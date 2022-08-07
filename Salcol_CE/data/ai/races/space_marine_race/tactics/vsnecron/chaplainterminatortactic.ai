@@ -1,0 +1,130 @@
+----------------------------------------
+-- File: 'chaplainterminatortactic.ai'
+-- Edited by Thudmeizer @ 04.03.2016
+-- Edited by Cylarne_04 2011
+
+class 'ChaplainTerminatorTactic' (SpaceMarineInfantryTactic)
+
+ChaplainTerminator = {}
+
+function ChaplainTerminatorTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Chaplain Terminator Tactic")
+end
+
+function ChaplainTerminatorTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function ChaplainTerminatorTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+-- ChaplainTerminator is allowed to retreat even directly after a jump
+function ChaplainTerminatorTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+-- Arkhan 03.2006: Inherited method used by commanders which are able to jump with an attached squad
+function ChaplainTerminatorTactic:CanJumpAttached()
+	return true
+end
+
+function ChaplainTerminatorTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (ChaplainTerminator.demoralize_id == nil) then
+		ChaplainTerminator.demoralize_id = cpu_manager.stats:GetAbilityID( "marines_demoralize" )
+	end
+
+	if (ChaplainTerminator.flashbang_id == nil) then
+		ChaplainTerminator.flashbang_id = cpu_manager.stats:GetAbilityID( "marines_flashbang_grenades" )	
+	end
+
+	if (ChaplainTerminator.frag_id == nil) then
+		ChaplainTerminator.frag_id = cpu_manager.stats:GetAbilityID( "marines_frag_grenades" )	
+	end
+
+	if (ChaplainTerminator.inferno_id == nil) then
+		ChaplainTerminator.inferno_id = cpu_manager.stats:GetAbilityID( "marines_inferno_grenades" )	
+	end
+
+	if (ChaplainTerminator.krak_id == nil) then
+		ChaplainTerminator.krak_id = cpu_manager.stats:GetAbilityID( "marines_krak_grenades" )	
+	end
+
+	if (ChaplainTerminator.melta_id == nil) then
+		ChaplainTerminator.melta_id = cpu_manager.stats:GetAbilityID( "marines_melta_bombs" )	
+	end
+
+	if (ChaplainTerminator.smoke_id == nil) then
+		ChaplainTerminator.smoke_id = cpu_manager.stats:GetAbilityID( "marines_smoke_grenades" )	
+	end
+
+	if (ChaplainTerminator.run_id == nil) then
+		ChaplainTerminator.run_id = cpu_manager.stats:GetAbilityID( "all_run!" )	
+	end
+end
+
+function ChaplainTerminatorTactic:DoAbilities()
+	
+	-- If we are dying, lower requisites for attacks
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+		Ability.DoAbilityTarget( self.squad_ai, ChaplainTerminator.demoralize_id, Ability.Filters.CloseInfantryEnemy, 4 )
+	else
+		Ability.DoAbilityTarget( self.squad_ai, ChaplainTerminator.demoralize_id, Ability.Filters.CloseInfantryEnemy, 8 )
+	end
+
+        Ability.DoAbilityTarget( self.squad_ai, ChaplainTerminator.flashbang_id, Ability.Filters.CloseSquadEnemy, 4)
+        Ability.DoAbilityTarget( self.squad_ai, ChaplainTerminator.frag_id, Ability.Filters.CloseSquadEnemy, 2)
+        Ability.DoAbilityTarget( self.squad_ai, ChaplainTerminator.inferno_id, Ability.Filters.CloseSquadEnemy, 3)
+        Ability.DoAbilityTarget( self.squad_ai, ChaplainTerminator.krak_id, Ability.Filters.CloseVehicleEnemy, 1)
+        Ability.DoAbilityTarget( self.squad_ai, ChaplainTerminator.melta_id, Ability.Filters.CloseVehicleEnemy, 1)
+
+	-- Search a squad to launch smoke grenades
+	local iRange = self.squad_ai:GetAbilityRange(ChaplainTerminator.smoke_id)
+	local oUnit = Ability.Filters.CloseHurt(self.squad_ai:GetPosition(), iRange, 1)
+	if (oUnit ~= nil and oUnit:IsInCombat() and cpu_manager:GetUnitStrength(oUnit) > 150) then
+		self.squad_ai:DoSpecialAbilitySquad(ChaplainTerminator.smoke_id, oUnit:GetSquad())
+	end
+
+	-- Run if safe
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.stateID ~= Tactic.StateID.NoState) then
+
+		-- If I am safe I can run
+		if (self.squad_ai:CanDoAbility( ChaplainTerminator.run_id )) then
+			self.squad_ai:DoSpecialAbility( ChaplainTerminator.run_id )
+		end
+	end
+end
+
+function ChaplainTerminatorTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update(self)) then
+		return
+	end
+	
+	-- Attach to melee in tier2+
+	if (cpu_manager:GetTierLevel() > 1) then
+	
+		if (self:TryAttachSquad(true, true, 50, 100, nil) ~= nil) then
+			return
+		end
+	end
+	if (self:TryAttachSquad(false, true, 50, 100, self.m_fCommanderAttachHealth) == nil) then
+		self:TryAttachSquadMelee()
+	end
+
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end
+

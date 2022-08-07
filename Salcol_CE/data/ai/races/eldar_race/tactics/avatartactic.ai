@@ -1,0 +1,37 @@
+----------------------------------------
+-- File: 'avatartactic.ai'
+-- Edited by Thudmeizer @ 22.02.2016
+
+class 'AvatarTactic' (EldarInfantryTactic)
+
+Avatar = {}
+
+function AvatarTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Avatar Tactic")
+end
+
+function AvatarTactic:AlwaysAttack()
+	return true
+end
+
+function AvatarTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (Avatar.wrath_id == nil) then
+		Avatar.wrath_id = cpu_manager.stats:GetAbilityID( "eldar_avatar_wrath" )
+	end
+
+	if (Avatar.doom_id == nil) then
+		Avatar.doom_id = cpu_manager.stats:GetAbilityID( "eldar_wailing_doom" )
+	end
+end
+
+function AvatarTactic:DoAbilities()
+
+	-- Check if I use Avatar's Wraith
+	Ability.DoAbilityArea( self.squad_ai, Avatar.wrath_id, Ability.Filters.CloseSquadEnemy, 10, 6 )
+
+	-- Check if I use Wailing Doom
+	Ability.DoAbilityTarget( self.squad_ai, Avatar.doom_id, Ability.Filters.CloseInfantryEnemy, 5 )
+end

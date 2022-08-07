@@ -1,0 +1,16 @@
+----------------------------------------
+-- File: 'falcontactic.ai'
+-- Edited by Thudmeizer		@ 22.03.2016
+
+class 'FalconTactic' (EldarVehicleTactic)
+
+Falcon = {}
+
+function FalconTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Falcon Grav Tank Tactic")
+	
+	-- Vehicle is a light transport
+	self.m_iTransportVehicle = 1
+	self.m_iTransportSlots = 1
+end

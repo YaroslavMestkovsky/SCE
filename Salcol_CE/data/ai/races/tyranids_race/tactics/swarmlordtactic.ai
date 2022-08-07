@@ -1,0 +1,83 @@
+----------------------------------------
+-- File: 'swarmlordtactic.ai'
+-- Edited by Thudmeizer @ 25.04.2016
+
+class 'SwarmLordTactic' (TyranidInfantryTactic)
+
+SwarmLord = {}
+
+function SwarmLordTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Swarm Lord Tactic")
+end
+
+function SwarmLordTactic:IsAttacker()
+	self:IsCommanderAttacker()
+end
+
+function SwarmLordTactic:IsDefender()
+	self:IsCommanderDefender()
+end
+
+function SwarmLordTactic:InitAbilities()
+
+	if (SwarmLord.scream_id == nil) then
+		SwarmLord.scream_id = cpu_manager.stats:GetAbilityID( "tyranids_swarmlord_scream" )
+	end
+
+	if (SwarmLord.biobomb_id == nil) then
+		SwarmLord.biobomb_id = cpu_manager.stats:GetAbilityID( "tyranids_bio_bomb" )
+	end
+
+	if (SwarmLord.run_id == nil) then
+		SwarmLord.run_id = cpu_manager.stats:GetAbilityID( "all_run!" )	
+	end
+end
+
+function SwarmLordTactic:DoAbilities()
+	
+	-- Horror Scream: Offensive timed ability. Unleashes a horrifying Scream, ruining the morale of nearby enemy units within a 25m radius.
+	if (self.squad_ai:CanDoAbility(SwarmLord.scream_id)) then
+		Ability.DoAbilityArea( self.squad_ai, SwarmLord.scream_id, Ability.Filters.CloseSquadEnemy, 20, 5 )
+		Ability.DoAbilityArea( self.squad_ai, SwarmLord.scream_id, Ability.Filters.CloseMonsterEnemy, 20, 3 )
+	end
+
+	-- Bio Bomb: Unleash poisonous gases and deadly blasts of energy at the designated target. Wipes out most objects in a 45m radius, plus an expanding gas cloud effect covering approximately 60m.
+	local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
+	if (self.squad_ai:CanDoAbility(SwarmLord.biobomb_id) and iRequisition >= 5000) then
+		Ability.DoAbilityPos( self.squad_ai, SwarmLord.biobomb_id, Ability.Filters.CloseEnemy, 25 ) 
+		Ability.DoAbilityPos( self.squad_ai, SwarmLord.biobomb_id, Ability.Filters.CloseVehicleEnemy, 3 ) 
+	end
+	
+	-- Run if safe
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.stateID ~= Tactic.StateID.NoState) then
+
+		-- If I am safe I can run
+		if (self.squad_ai:CanDoAbility( SwarmLord.run_id )) then
+			self.squad_ai:DoSpecialAbility( SwarmLord.run_id )
+		end
+	end	
+end
+
+function SwarmLordTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update(self)) then
+		return
+	end
+	
+	-- Attach to melee in tier2+
+	if (cpu_manager:GetTierLevel() > 1) then
+	
+		if (self:TryAttachSquad(true, true, 50, 100, nil) ~= nil) then
+			return
+		end
+	end
+	if (self:TryAttachSquad(false, true, 50, 100, self.m_fCommanderAttachHealth) == nil) then
+		self:TryAttachSquadMelee()
+	end
+end

@@ -1,0 +1,32 @@
+----------------------------------------
+-- File: 'turretbioacidtactic.ai'
+-- Edited by Cylarne @ 2015
+-- Edited by Thudmeizer	@ 25.04.2016
+
+class 'TurretBioAcidTactic' (BaseTactic)
+
+TurretBioAcid = {}
+
+function TurretBioAcidTactic:__init( base_ai ) super( base_ai )
+
+	self:SetName("Turret BioAcid Tactic")
+end
+
+function TurretBioAcidTactic:InitAbilities()
+	
+	if (TurretBioAcid.minelaunch_id == nil) then
+		TurretBioAcid.minelaunch_id = cpu_manager.stats:GetAbilityID( "tyranids_minelaunch_greater" )
+	end
+end
+
+function TurretBioAcidTactic:DoAbilities()
+
+	-- Activate turret greater minelaunch
+	if (self.base_ai:CanDoAbility(TurretBioAcid.minelaunch_id)) then
+		if (self.base_ai:WasRecentlyHurt() and self.base_ai:GetHealthPercentage() < 0.3) then
+			Ability.DoAbilityPos( self.base_ai, TurretBioAcid.minelaunch_id, Ability.Filters.CloseEnemy, 2 )
+		else
+			Ability.DoAbilityPos( self.base_ai, TurretBioAcid.minelaunch_id, Ability.Filters.CloseEnemy, 5 )
+		end
+	end	
+end
