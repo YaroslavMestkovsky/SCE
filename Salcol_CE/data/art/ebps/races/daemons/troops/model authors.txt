@@ -1,0 +1,13 @@
+"Daemon_Lord" = _Echo_
+"Daemon_Bloodletters" = Catwell
+"daemon_doomed_one" = Warsmith
+"daemon_horror_blu" = RT2
+"daemon_horror_black" = RT2
+"daemon_mutilator" = RT2
+"daemon_primarch_angron" = Catwell
+"daemon_flesh_hound" = Horus Heretic
+"daemon_daemon_prince = Cylarne/Lord Doofus
+
+All structures, sounds, FX, EVENT files, logo + gameplay code and ideas = Daemons mod team and RT2
+
+None of this is to be separated from mod.
