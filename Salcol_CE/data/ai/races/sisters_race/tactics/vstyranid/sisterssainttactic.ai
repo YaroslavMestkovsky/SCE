@@ -1,0 +1,63 @@
+----------------------------------------
+-- File: 'sisterssainttactic.ai'
+-- Edited by Thudmeizer @ 10.08.2016
+
+class 'SistersSaintTactic' (SistersInfantryTactic)
+
+SistersSaint = {}
+
+function SistersSaintTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Sisters Saint Tactic")
+end
+
+function SistersSaintTactic:AlwaysAttack()
+	return true
+end
+
+-- Saint is allowed to retreat even directly after a jump
+function SistersSaintTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+function SistersSaintTactic:JumpAttack()
+	Tactic.JumpAttack(self)
+end
+
+function SistersSaintTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (SistersSaint.run_id == nil) then
+		SistersSaint.run_id = cpu_manager.stats:GetAbilityID( "all_run!" )	
+	end
+end
+
+function SistersSaintTactic:DoAbilities()
+
+	-- Run if safe
+	if ((not self.squad_ai:IsInCombat() and self.squad_ai:IsInStateMove()) or self.stateID ~= Tactic.StateID.NoState) then
+
+		-- If I am safe I can run
+		if (self.squad_ai:CanDoAbility( SistersSaint.run_id )) then
+			self.squad_ai:DoSpecialAbility( SistersSaint.run_id )
+		end
+	end
+end
+
+function SistersSaintTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+
+	if not InfantryTactic.Update( self ) then
+		return false
+	end
+
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end

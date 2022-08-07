@@ -1,0 +1,77 @@
+----------------------------------------
+-- File: 'daemonsprinceslaaneshtactic.ai'
+-- Edited by Thudmeizer @ 08.05.2016
+
+class 'DaemonsPrinceSlaaneshTactic' (DaemonsInfantryTactic)
+
+DaemonsPrinceSlaanesh = {}
+
+function DaemonsPrinceSlaaneshTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Daemons Prince Slaanesh Tactic")
+end
+
+function DaemonsPrinceSlaaneshTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function DaemonsPrinceSlaaneshTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+-- Daemon Prince is allowed to retreat even directly after a jump
+function DaemonsPrinceSlaaneshTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+function DaemonsPrinceSlaaneshTactic:JumpAttack()
+	Tactic.JumpAttack(self)
+end
+
+function DaemonsPrinceSlaaneshTactic:InitAbilities()
+
+	-- Init ability ID's
+	if (DaemonsPrinceSlaanesh.fear_id == nil) then
+		DaemonsPrinceSlaanesh.fear_id = cpu_manager.stats:GetAbilityID( "daemons_fear_roar" )	
+	end
+		
+	if (DaemonsPrinceSlaanesh.curse_id == nil) then
+		DaemonsPrinceSlaanesh.curse_id = cpu_manager.stats:GetAbilityID( "daemons_curse_slaanesh" )	
+	end
+end
+
+function DaemonsPrinceSlaaneshTactic:DoAbilities()
+
+	-- If we are dying, lower requisites for attacks
+	if ( self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4 ) then
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceSlaanesh.fear_id, Ability.Filters.CloseSquadEnemy, 3 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceSlaanesh.fear_id, Ability.Filters.CloseMonsterEnemy, 3 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceSlaanesh.curse_id, Ability.Filters.CloseSquadEnemy, 4 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceSlaanesh.curse_id, Ability.Filters.CloseMonsterEnemy, 4 )
+	else
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceSlaanesh.fear_id, Ability.Filters.CloseSquadEnemy, 6 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceSlaanesh.fear_id, Ability.Filters.CloseMonsterEnemy, 6 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceSlaanesh.curse_id, Ability.Filters.CloseSquadEnemy, 8 )
+		Ability.DoAbilityTarget( self.squad_ai, DaemonsPrinceSlaanesh.curse_id, Ability.Filters.CloseMonsterEnemy, 8 )
+	end
+end
+
+function DaemonsPrinceSlaaneshTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+	
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end
+

@@ -1,0 +1,12 @@
+----------------------------------------
+-- File: 'shadowswordtactic.ai'
+-- Edited by Cylarne_04 2011
+-- Edited by Thudmeizer		@ 28.02.2016
+
+class 'ShadowswordTactic' (GuardVehicleTactic)
+
+Shadowsword = {}
+
+function ShadowswordTactic:__init( squad_ai ) super( squad_ai )
+	self:SetName("Shadowsword Tactic")
+end

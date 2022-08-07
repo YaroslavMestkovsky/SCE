@@ -1,0 +1,105 @@
+----------------------------------------
+-- File: 'commandsquadtactic.ai'
+-- Edited by Arkhan		@ 23.11.2007
+-- Edited by Thudmeizer		@ 27.02.2016
+
+class 'CommandSquadTactic' (GuardInfantryTactic)
+
+CommandSquad = {}
+
+function CommandSquadTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Command Squad Tactic")
+	
+	-- Command squad is able to enter a bunker
+	self.m_bBunkerSquad = true
+end
+
+-- Assassinate win condition -- never attack
+function CommandSquadTactic:IsAttacker()
+
+	-- Never attack in assassinate game mode
+	if (cpu_manager.assassinate) then
+		return false
+	end
+	
+	-- Attack if we have more than one squad member
+	if (self.squad_ai:GetNumTroopers() > 1) then
+		return true
+	end
+	return self:IsCommanderAttacker()
+end
+
+-- Assassinate win condition -- never defend
+function CommandSquadTactic:IsDefender()
+
+	-- Never defend in assassinate game mode
+	if (cpu_manager.assassinate) then
+		return false
+	end
+	
+	-- Defend if we have more than one squad member
+	if (self.squad_ai:GetNumTroopers() > 1) then
+		return true
+	end
+	return self:IsCommanderDefender()
+end
+
+function CommandSquadTactic:Reinforce()
+
+	-- Allow free reinforcing during harassing time
+	if (g_iGMT > DefendChokePointPlan.HarassingTime * 60) then
+
+		-- If there are no ressources available, don't upgrade!
+		if (not Tactic.Options.can_reinforce) then
+			return
+		end
+	end
+
+	if (not self.squad_ai:IsReinforcing()) then
+
+		-- Always try for the actual leader first
+		if (self.squad_ai:CanReinforce( false, 0 )) then
+			self.squad_ai:DoReinforce( false, 0 )
+			return
+		end
+
+		-- Try for different types of squad members
+		local commissarIndex = 0
+		local psykerIndex = 1
+		local priestIndex = 2
+		local voxIndex = 3
+	
+		-- Get current leader count
+		local numCommissars = self.squad_ai:GetLeaderCount( commissarIndex )
+		local numPsykers = self.squad_ai:GetLeaderCount( psykerIndex)
+		local numPriests = self.squad_ai:GetLeaderCount( priestIndex )
+		local numVox = self.squad_ai:GetLeaderCount( voxIndex )
+
+		-- Desired number of each leader type
+		local desiredCommissars = math.random(0,1)
+		local desiredPsykers = math.random(0,1)
+		local desiredPriests = math.random(0,1)
+		local desiredVox = math.random(0,1)
+
+		-- Desired order of reinforcing
+		if (numCommissars < desiredCommissars) then
+			if self.squad_ai:CanReinforce( true, commissarIndex ) then
+				self.squad_ai:DoReinforce( true, commissarIndex )
+			end
+		elseif (numPsykers < desiredPsykers) then
+			if self.squad_ai:CanReinforce( true, psykerIndex ) then
+				self.squad_ai:DoReinforce( true, psykerIndex )
+			end
+		elseif (numPriests < desiredPriests) then
+			if self.squad_ai:CanReinforce( true, priestIndex ) then
+				self.squad_ai:DoReinforce( true, priestIndex )
+			end
+		elseif (numVox < desiredVox) then
+			if self.squad_ai:CanReinforce( true, voxIndex ) then
+				self.squad_ai:DoReinforce( true, voxIndex )
+			end
+		end
+	end
+end
+

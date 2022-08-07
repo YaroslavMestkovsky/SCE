@@ -1,0 +1,67 @@
+function sisters_race:GetEnemyS()
+         Strategy=nil
+         BuildBase=nil
+         for enemy in cpu_manager.stats:GetPlayerStats() do
+		if cpu_manager.player_stats:IsEnemy( enemy ) then
+		   EnemyRace=cpu_manager:GetPlayerRaceName(enemy)
+                end
+                if (EnemyRace==space_marine_race) then 
+	Strategy='Races/sisters_race/Strategies/SistersBuildBaseStrategyvsSpaceMarine.ai'
+	BuildBase="Races/sisters_race/Strategies/SistersStrategyInfovsSpaceMarine.ai"
+                else
+	Strategy='Races/sisters_race/Strategies/SistersBuildBaseStrategy.ai' 
+	BuildBase="Races/sisters_race/Strategies/SistersStrategyInfo.ai" 
+		end
+        end
+        return nil
+end
+
+
+
+        local enemy = military_manager:FindClosestEnemyPlayer()
+		if (enemy == nil) then
+			return
+		end
+        local EnemyRace = enemy:GetPlayerRaceName()
+                if (EnemyRace=space_marine_race) then 
+	import( 'Races/sisters_race/Strategies/SistersBuildBaseStrategyvsSpaceMarine.ai' )
+	import( "Races/sisters_race/Strategies/SistersStrategyInfovsSpaceMarine.ai" )
+                else
+	import( 'Races/sisters_race/Strategies/SistersBuildBaseStrategy.ai' )
+	import( "Races/sisters_race/Strategies/SistersStrategyInfo.ai" )
+		end
+        end
+
+	if (iTierLevel == 1) then
+	
+		-- Check resources
+		if (g_iGMT > 60 * CpuManager.ForceTech.StartTier2 and (iRequisition > 600 and iPower > 600)) then
+			return true
+		end
+		
+	elseif (iTierLevel == 2) then
+		
+		-- Check time
+		if (g_iGMT > 60 * CpuManager.ForceTech.StartTier2 and (iRequisition > 900 and iPower > 600)) then
+			return true
+		end
+		
+	elseif (iTierLevel == 3) then	
+
+		-- Check time
+		if (g_iGMT > 60 * CpuManager.ForceTech.StartTier3 or (iRequisition > 1500 and iPower > 1500)) then
+			return true
+		end
+	elseif (iTierLevel == 4) then	
+
+		-- Check time
+		if (g_iGMT > 60 * CpuManager.ForceTech.StartTier4 or (iRequisition > 2000 and iPower > 2000)) then
+			return true
+		end
+	elseif (iTierLevel == 5) then	
+
+		-- Check time
+		if (g_iGMT > 60 * CpuManager.ForceTech.StartTier5 or (iRequisition > 3000 and iPower > 3000)) then
+			return true
+		end
+	end
