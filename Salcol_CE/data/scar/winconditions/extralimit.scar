@@ -1,0 +1,42 @@
+--Aliaska
+
+import("ScarUtil.scar")
+import("WXPScarUtil.scar")
+import("Player.scar");
+import("GroupCallers.scar");
+import("Command.scar");
+import("Groups.scar");
+import("WXPGroups.scar");
+
+         techname = {
+           "all_squad_unit_cap_1",
+           "all_squad_unit_cap_2",
+           "all_squad_unit_cap_3",
+           "all_squad_unit_cap_4",
+         }
+         technamenecron = {
+           "all_squad_unit_cap_1_necron",
+           "all_squad_unit_cap_2_necron",
+           "all_squad_unit_cap_3_necron",
+           "all_squad_unit_cap_4_necron",
+         }
+
+function enableextra()
+
+	local num_player = World_GetPlayerCount() 	
+
+	for i = 0, num_player - 1 do
+          local playerID = World_GetPlayerAt( i )
+          local playerRace = Player_GetRaceName(playerID)
+	for i=1,table.getn( techname ) do
+	  if (playerRace == "necron_race") then
+          Player_UnRestrictResearch(playerID, technamenecron[i])
+          else
+          Player_UnRestrictResearch(playerID, techname[i])
+          end
+        end
+
+	end	
+end
+
+Rule_AddOneShot( enableextra, 2)
