@@ -1,0 +1,18 @@
+22:58:35.56   SOULSTORM started at 2022-08-10 22:58
+22:58:35.56   OS NT 6.2, 0MB Physical Memory
+22:58:35.56   RUN-OPTIONS -nomovies -modname salcol_ce 
+22:58:35.56   WORKING-DIR d:\dawn of war ss
+22:58:35.56   USER 79608
+22:58:35.56   
+22:58:35.56   Validator type :
+22:58:35.56   XTHREAD: Hyper-Threading Technology Processors are not detected.
+22:58:35.56   XTHREAD: Detected 4 core(s) with 4 hardware thread(s)
+22:58:35.56   XTHREAD: Main thread now used as XThread 0
+22:58:35.56   XTHREAD: Spawned thread on processor 1
+22:58:35.56   XTHREAD: Spawned thread on processor 2
+22:58:35.56   XTHREAD: Spawned thread on processor 3
+22:58:35.56   PLATFORM -- Duplicate instance of app
+22:58:35.56   APP -- The Application Failed to Initialize the Platform Window
+22:58:35.56   AppInitGlobal -- Failed load for step: 'Window'
+22:58:35.56   
+Application closed without errors
