@@ -3,3 +3,5 @@
 !.gitignore.txt
 !.Salcol_CE.module
 !/Salcol_CE
+!*.rgd
+!*.lua
