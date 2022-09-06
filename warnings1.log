@@ -1,18 +1,18 @@
-10:24:34.49   SOULSTORM started at 2022-08-22 10:24
-10:24:34.49   OS NT 6.2, 0MB Physical Memory
-10:24:34.49   RUN-OPTIONS -nomovies -modname salcol_ce 
-10:24:34.49   WORKING-DIR d:\dawn of war ss
-10:24:34.49   USER 79608
-10:24:34.49   
-10:24:34.49   Validator type :
-10:24:34.49   XTHREAD: Hyper-Threading Technology Processors are not detected.
-10:24:34.49   XTHREAD: Detected 4 core(s) with 4 hardware thread(s)
-10:24:34.49   XTHREAD: Main thread now used as XThread 0
-10:24:34.49   XTHREAD: Spawned thread on processor 1
-10:24:34.49   XTHREAD: Spawned thread on processor 2
-10:24:34.49   XTHREAD: Spawned thread on processor 3
-10:24:34.49   PLATFORM -- Duplicate instance of app
-10:24:34.49   APP -- The Application Failed to Initialize the Platform Window
-10:24:34.49   AppInitGlobal -- Failed load for step: 'Window'
-10:24:34.49   
+17:10:00.79   SOULSTORM started at 2022-09-06 17:10
+17:10:00.79   OS NT 6.2, 0MB Physical Memory
+17:10:00.79   RUN-OPTIONS -nomovies -modname salcol_ce 
+17:10:00.79   WORKING-DIR d:\dawn of war ss
+17:10:00.79   USER 79608
+17:10:00.79   
+17:10:00.80   Validator type :
+17:10:00.80   XTHREAD: Hyper-Threading Technology Processors are not detected.
+17:10:00.80   XTHREAD: Detected 4 core(s) with 4 hardware thread(s)
+17:10:00.80   XTHREAD: Main thread now used as XThread 0
+17:10:00.80   XTHREAD: Spawned thread on processor 1
+17:10:00.80   XTHREAD: Spawned thread on processor 2
+17:10:00.80   XTHREAD: Spawned thread on processor 3
+17:10:00.80   PLATFORM -- Duplicate instance of app
+17:10:00.80   APP -- The Application Failed to Initialize the Platform Window
+17:10:00.80   AppInitGlobal -- Failed load for step: 'Window'
+17:10:00.80   
 Application closed without errors
