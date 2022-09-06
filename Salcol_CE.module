@@ -3,7 +3,7 @@
 UIName = Salcols Community Edition
 Description = The Salcols Community Edition project, developed by the Salcols Community.
 DllName = WXPMod
-;; DllName = WXPMod_DCModё
+;; DllName = WXPMod_DCMod
 Playable = 1
 ModFolder = Salcol_CE
 ModVersion = version 5.6.6
