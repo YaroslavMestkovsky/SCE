@@ -1,10 +1,8 @@
 /*
 *.*
-!/Salcol_CE
-!/Salcol_CE/data/attrib/*
-*.log
 !.gitignore.txt
 !.Salcol_CE.module
 !*.rgd
 !*.lua
 !.gitignore
+!/Salcol_CE
