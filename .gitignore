@@ -5,4 +5,4 @@
 !*.rgd
 !*.lua
 !.gitignore
-!/Salcol_CE
+!**/Salcol_CE
