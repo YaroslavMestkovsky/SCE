@@ -259,40 +259,22 @@ function MarineBuildBaseStrategy:UpdateTierLevel()
 end
 
 function MarineBuildBaseStrategy:CheckTech()
-        self.techongo = false
-        local type = nil
-        local name = nil
         if self.tierLevel == 1 then
-        type = addon
-        name = "space_marine_hq_addon_1"
+        self.techongotype = addon
+        self.techongoname = "space_marine_hq_addon_1"
         elseif self.tierLevel == 2 then
-        type = addon
-        name = "space_marine_hq_addon_2"
+        self.techongotype = addon
+        self.techongoname = "space_marine_hq_addon_2"
         elseif self.tierLevel == 3 then
-        type = research
-        name = "marine_heavy_armor_deployment"
+        self.techongotype = research
+        self.techongoname = "marine_heavy_armor_deployment"
         elseif self.tierLevel == 4 then
-        type = research
-        name = "marines_research_bombardment"
+        self.techongotype = research
+        self.techongoname = "marines_research_bombardment"
         elseif self.tierLevel == 5 then
-        type = research
-        name = "marine_apocalypse_research"
-        end
-       
-        if type == addon then
-        local iTechID = cpu_manager.stats:GetAddOnID(name)
-        elseif type == research then
-        local iTechID = cpu_manager.stats:GetResearchID(name)
-        elseif type == building then
-        local iTechID = cpu_manager.stats:GetBuildingID(name)
-        end
-	for oBuildChannel in build_manager:GetBuildChannelAIs() do
-		-- Check type ID
-		if (oBuildChannel:GetBlueprintID() == iTechID) then
-			self.techongo = true
-                        return
-		end
-	end     
+        self.techongotype = research
+        self.techongoname = "marine_apocalypse_research"
+        end   
 end
 
 function MarineBuildBaseStrategy:BuildFlexible()
@@ -458,10 +440,10 @@ function MarineBuildBaseStrategy:BuildFlexible()
                         end
 
                         if iRequisition >= 900 then
-                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 12, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 30, 30, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 40, 30, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 50, 40, nil, 0)
                         end
 
 			-- Compute secondary researches
@@ -622,7 +604,7 @@ function MarineBuildBaseStrategy:BuildFlexible()
               if iRequisition >= 100 and iPower >= 100 then
 		self:DynamicAddon("space_marine_list_post_addon_1", 1*Numpoint, 1, 0, 0, 0, 0, nil, nil, false)
               end
-              if iRequisition >= 300 and iPower >= 300 then
+              if iRequisition >= 500 and iPower >= 700 then
 		self:DynamicAddon("space_marine_list_post_addon_2", 1*Numpoint, 2, 0, 0, 0, 0, nil, nil, false)
               end
 

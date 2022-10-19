@@ -29,6 +29,7 @@ function DefendPlan:__init(vDefendPos, iDefendRange, bDefendHQ) super( CpuPlayer
 	self.m_bGatherTroops = false
 	
 	self.m_iArmyStrength = 0
+	self.m_iEnemyStrength = 0
 	self.m_vArmyPosition = nil
 	self.m_iLastUpdate = 0
 	self.m_iLastUpdateObtain = 0
@@ -43,8 +44,10 @@ function DefendPlan:CheckDefendable()
 	-- Check situation
 	local iEnemyStrength, iAlliedStrength, iMyStrength = cpu_manager:GetArmyStrengthAtPos(self.defend_pos, self.m_iDefendRange)
 	if (iEnemyStrength == 0) then
+        self.m_iEnemyStrength=0
 		return 0
 	end
+        self.m_iEnemyStrength = iEnemyStrength
 
 	-- Don't check too often
 	if (g_iGMT < self.m_iLastDefenseStart + 5) then
@@ -188,7 +191,8 @@ function DefendPlan:ObtainForce()
         end
         self.m_iLastUpdateObtain = g_iGMT + 2
 	local defend_units = {}
-	
+	self.m_iArmyStrength=self:GetArmyStrength()
+
 	-- Check if we defend our home base
 	local bDefendHomeBase = false
 	if (distance_sqr(cpu_manager.start_pos, self.defend_pos) <= sqr(50) and
@@ -204,14 +208,20 @@ function DefendPlan:ObtainForce()
 	
 	-- Find the forces and defend
 	local oSupportDetector = nil
+--        military_manager:Update()
 	for oSquad in military_manager:GetUnlockedSquads() do
-	
+               if AttackStrategy.m_vAttackPosition.x~=0 or AttackStrategy.m_vAttackPosition.z ~=0 or AttackStrategy2.m_vAttackPosition.x~=0 or AttackStrategy2.m_vAttackPosition.z ~=0 then
+	        if self.m_iEnemyStrength*1.1<self.m_iArmyStrength then
+                   break
+                end
+               end
 		-- Check if squad is valid
 		if (oSquad:IsValid()) then 
 		
 			-- Check if squad is strong enough
 			local bSquadOk = not self:IsWeak(oSquad)
-			
+			local iUnitStrength = oSquad:GetTactic():GetUnitStrength()
+
 			-- Check if unit is not a vehicle in urgent need of repairing
 			local oTactic = oSquad:GetTactic()
 			if (oTactic:GetType() == Tactic.Types.Vehicle and oTactic:NeedRepair() and not bDefendHomeBase) then
@@ -221,7 +231,8 @@ function DefendPlan:ObtainForce()
 			-- Check if squad should be added to defend army
 			if (oTactic:AlwaysAttack() or (oTactic:IsDefender() and bSquadOk)) then
 				table.insert( defend_units, oSquad )
-			
+				self.m_iArmyStrength = self.m_iArmyStrength + iUnitStrength
+
 			-- Check if the unit is a support detector
 			elseif (bNeedSupportDetector and oTactic:IsSupportDetector()) then
 				oSupportDetector = oSquad
@@ -305,7 +316,7 @@ function DefendPlan:Defending()
 		-- Threat is over, but wait a bit until stop defending
 		if (self.m_iDefenseDelay == 0) then
 			self.m_iDefenseDelay = g_iGMT
-		elseif (g_iGMT > self.m_iDefenseDelay + 10) then
+		elseif (g_iGMT > self.m_iDefenseDelay + 5) then
 			self.m_iDefenseDelay = 0
 			self:SetComplete( true )
 			return
@@ -327,7 +338,7 @@ function DefendPlan:Defending()
 		end
 		self.m_bGatherTroops = true
 		
-	elseif (g_iGMT > self.m_iTargetChange + 1) then
+	elseif (g_iGMT > self.m_iTargetChange + 3) then
 	
 		-- Get best defend position
 		vDefendPosition = self:GetBestDefendPosition(self.defend_pos, self.m_iDefendRange + 35)
@@ -532,7 +543,7 @@ function DefendPlan:IsWeak(oSquad)
 	local iMinStrength = 60 * cpu_manager:GetTierLevel()
 	local bLowTroopCount = (oSquad:GetNumTroopers() < oSquad:GetMaxTroopers() / 4)
 	local bLowStrength = (oSquad:GetTactic():GetUnitStrength() < iMinStrength)
-	return ((bLowTroopCount or bLowStrength) and oSquad:CanReinforce( false, 0 ))
+	return ((bLowTroopCount or bLowStrength) and not oSquad:GetMaxTroopers()==1)
 end
 
 function DefendPlan:RemoveLosses()

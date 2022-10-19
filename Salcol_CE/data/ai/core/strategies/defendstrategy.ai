@@ -9,6 +9,7 @@ class 'DefendStrategy' (Strategy)
 
 DefendStrategy.bDefending = false
 DefendStrategy.bHeavyThreat = false
+DefendStrategy.m_vDefendPosition = Vector3f(0, 0, 0)
 
 function DefendStrategy:__init( info ) super()
 
@@ -18,7 +19,7 @@ function DefendStrategy:__init( info ) super()
 	self.m_oDefendPlan = nil
 	self.m_iDelayTime = 0
 
-	self.m_iNextUpdate = 5
+	self.m_iNextUpdate = AI_GetPlayerID()-1000 + 5
 end
 
 function DefendStrategy:CalculateNewChokepoint()
@@ -35,8 +36,8 @@ function DefendStrategy:CalculateNewChokepoint()
 	
 	-- Get army strengths
 	local iMyArmyStrength = cpu_manager:GetArmyStrength()
---	local iEnemyArmyStrength = cpu_manager:GetArmyStrength(oEnemy)
-	local bAllowCriticals = (iMyArmyStrength > 3000)
+	local iEnemyArmyStrength = cpu_manager:GetArmyStrength(oEnemy)
+	local bAllowCriticals = (iMyArmyStrength > 4000) and cpu_manager.m_bTakeAndHoldMode
 	
 	-- Find best HQ or strategic point
 	local vBestPos = nil
@@ -45,6 +46,9 @@ function DefendStrategy:CalculateNewChokepoint()
 	else
 		vBestPos = cpu_manager:FindClosestFriendlyBaseOrStrategicPoint(vEnemyPos, cpu_manager.start_pos, true, false, true)
 	end
+--[[        if not cpu_manager.terrain_analyzer:HasThreat(vBestPos, 45) then
+                vBestPos = nil
+        end]]
 	if (vBestPos == nil) then
 		aitrace("DefendStrategy: No chokepoints available...")
 		self.chokept_pos = nil
@@ -68,7 +72,7 @@ function DefendStrategy:CalculateNewChokepoint()
 	end
    
    	-- Check if choke point plan with same position already exists
---[[	if (self:PlanExists("Defend Choke Point Plan", self.chokept_pos ) == false) then 
+	if (self:PlanExists("Defend Choke Point Plan", self.chokept_pos ) == false) and g_iGMT < 3*60 then 
 		-- Create new choke point plan
 		aitrace("DefendStrategy: New choke point at "..vec2str(self.chokept_pos))
 		if (self.choke_point_plan ~= nil) then
@@ -77,7 +81,7 @@ function DefendStrategy:CalculateNewChokepoint()
 		self.choke_point_plan = DefendChokePointPlan(self.chokept_pos)
 		self:AddPlan(self.choke_point_plan)
 
-	end]]
+	end
 end
 
 function DefendStrategy:GetName()
@@ -95,12 +99,14 @@ function DefendStrategy:DefendPosition(vPos, iRange, bHQ)
 		if (self.m_oDefendPlan ~= nil) then
 			self.m_oDefendPlan:SetComplete( true )
 			self.m_oDefendPlan = nil
+                        DefendStrategy.m_vDefendPosition = Vector3f(0, 0, 0)
 		end
 		
 		-- Create new defend plan
 		self.m_oDefendPlan = DefendPlan(vPos, iRange, bHQ)
 		self:AddPlan(self.m_oDefendPlan)
-	end
+                DefendStrategy.m_vDefendPosition = vPos
+        end
 	DefendStrategy.bHeavyThreat = false
 	
 	-- Find closest enemy
@@ -152,10 +158,10 @@ function DefendStrategy:CheckAllies()
 				-- Check situation and support ally if necessary
 				local iEnemyStrength, iAlliedStrength = cpu_manager:GetArmyStrengthAtPos(vStartPosition, iCriticalRange)
 				-- Do not defend a lost cause
-				if (iEnemyStrength > iMinThreat * 3 and iEnemyStrength > iAlliedStrength * 5) then
+--[[				if (iEnemyStrength > iMinThreat * 3 and iEnemyStrength > iAlliedStrength * 5) then
 					aitrace("DefendStrategy: Defend an ally: Lost cause: "..tostring(iAlliedStrength).." / "..tostring(iEnemyStrength))
 					return nil
-				end
+				end]]
 				fModifier = math.max(1, iDistance / 100) / fSupportFactor
 				if (iEnemyStrength > iMinThreat and iDistance < 450 and fModifier * iAlliedStrength < iEnemyStrength) then
 	
@@ -224,7 +230,7 @@ function DefendStrategy:GetPostThreat()
 
 			-- Check for threat
 			local vPosition = oBuilding:GetPosition()
-			if (cpu_manager.terrain_analyzer:HasThreat(vPosition, 35)) then
+			if (cpu_manager.terrain_analyzer:HasThreat(vPosition, 45)) then
 			
 				-- Calculate distance to base
 				local iDistanceToMe = cpu_manager:GetShortestPathingDistance(cpu_manager.start_pos, vPosition, true)
@@ -250,18 +256,12 @@ function DefendStrategy:Update()
 	
 	aitrace("DefendStrategy: Update...", true)
 	if self.m_iNextUpdate < g_iGMT then
-        return
+           return
         end
 	-- Update choke point
---	self:CalculateNewChokepoint()
+	self:CalculateNewChokepoint()
 
 	self.m_iNextUpdate = g_iGMT + 5
-
-	if self.chokept_pos ~= nil then
-	 for build_channel in build_manager:GetBuildChannelAIs() do
-		build_channel:SetRallyPoint( self.chokept_pos )
-	 end
-        end
 
 	-- Check if we are countering a victory objective
 	if (AttackStrategy.bCounterVO) then
@@ -270,6 +270,7 @@ function DefendStrategy:Update()
 		if (self.m_oDefendPlan ~= nil) then
 			self.m_oDefendPlan:SetComplete( true )
 			self.m_oDefendPlan = nil
+                        DefendStrategy.m_vDefendPosition = Vector3f(0, 0, 0)
 		end
 		return
 	end
@@ -293,18 +294,18 @@ function DefendStrategy:Update()
 		elseif (self.m_oDefendPlan == nil) then
 		
 			-- Check my choke point
---			if (self.chokept_pos ~= nil and cpu_manager.terrain_analyzer:HasThreat(self.chokept_pos, 50)) then
---				aitrace("DefendStrategy: Defend my choke point!")
---				self:DefendPosition(self.chokept_pos, 50, false)
---			else
+			if (self.chokept_pos ~= nil and cpu_manager.terrain_analyzer:HasThreat(self.chokept_pos, 35)) then
+				aitrace("DefendStrategy: Defend my choke point!")
+				self:DefendPosition(self.chokept_pos, 35, false)
+			else
 			
 				-- Check listening posts
 				local vPostThreatPos = self:GetPostThreat()
 				if (vPostThreatPos ~= nil) then
 					aitrace("DefendStrategy: Defend a listening post!")
-					self:DefendPosition(vPostThreatPos, 50, false)
+					self:DefendPosition(vPostThreatPos, 35, false)
 				end
---			end
+			end
 		end
 	end
 	
@@ -312,11 +313,13 @@ function DefendStrategy:Update()
 	if (self.m_oDefendPlan == nil) then
 		DefendStrategy.bDefending = false
 		DefendStrategy.bHeavyThreat = false
+                DefendStrategy.m_vDefendPosition = Vector3f(0, 0, 0)
 	else
 		
 		-- Check if defend plan is complete
 		if (self.m_oDefendPlan:IsComplete()) then
 			self.m_oDefendPlan = nil
+                        DefendStrategy.m_vDefendPosition = Vector3f(0, 0, 0)
 			self:ForceReleaseAll()
 			DefendStrategy.bDefending = false
 			DefendStrategy.bHeavyThreat = false

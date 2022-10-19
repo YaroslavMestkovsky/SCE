@@ -70,10 +70,10 @@ function JetBikeTactic:JumpAttackRanged()
 	local iJumpRange = sqr(self.squad_ai:GetJumpDistance())
 	
 	-- Check if we can jump directly to the target
-	local iClosestDistance = distance_sqr(vJetBikePosition, self.target)
+	local iClosestDistance = distance_sqr(vJetBikePosition, self:GetTarget())
 	local vTargetPos = nil
 	if (iClosestDistance < iJumpRange) then
-		vTargetPos = self.target
+		vTargetPos = self:GetTarget()
 	else
 	
 		-- Get closest squad to target position
@@ -85,7 +85,7 @@ function JetBikeTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oSquad:GetPosition()
 				local iDistanceToJetBike = distance_sqr(vPosition, vJetBikePosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self.target)
+				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
 				if (iDistanceToJetBike < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition
@@ -102,7 +102,7 @@ function JetBikeTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oBuilding:GetPosition()
 				local iDistanceToJetBike = distance_sqr(vPosition, vJetBikePosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self.target)
+				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
 				if (iDistanceToJetBike < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition

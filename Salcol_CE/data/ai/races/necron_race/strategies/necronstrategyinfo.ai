@@ -147,12 +147,12 @@ BuildOrderStrategyInfo =
 			{ "squad", "necron_builder_scarab_squad" },
 			{ "squad", "necron_builder_scarab_squad" },
 			{ "flag_capture" }, { "flag_capture" }, { "post_builder" }, 
-			{ "building", "necron_summoning_core", false },
 			{ "building", "necron_amplification_generator", false },
 		        { "building", "necron_amplification_generator", false },
 		        { "building", "necron_amplification_generator", false },
 		        { "building", "necron_amplification_generator", false },
-		        { "building", "necron_amplification_generator", false }
+		        { "building", "necron_amplification_generator", false },
+			{ "building", "necron_summoning_core", false }
 		},
 		 
 		QuickStart =
@@ -164,12 +164,13 @@ BuildOrderStrategyInfo =
 			{ "squad", "necron_builder_scarab_squad" },
 			{ "squad", "necron_builder_scarab_squad" },
 			{ "flag_capture" }, { "flag_capture" }, { "post_builder" },
-			{ "building", "necron_summoning_core", false },
-			{ "building", "monolith", false },
-			{ "building", "necron_amplification_generator", false },
-			{ "building", "necron_amplification_generator", false },
 			{ "building", "necron_amplification_generator", false },
 		        { "building", "necron_amplification_generator", false },
+		        { "building", "necron_amplification_generator", false },
+		        { "building", "necron_amplification_generator", false },
+		        { "building", "necron_amplification_generator", false },
+			{ "building", "necron_summoning_core", false },
+			{ "building", "monolith", false },
 			{ "building", "necron_amplification_generator", false }
 		},
 		 
@@ -182,12 +183,13 @@ BuildOrderStrategyInfo =
 			{ "squad", "necron_builder_scarab_squad" },
 			{ "squad", "necron_builder_scarab_squad" },
 			{ "flag_capture" }, { "flag_capture" }, { "post_builder" },
-			{ "building", "necron_summoning_core", false },
-			{ "building", "necron_amplification_generator", false },
-			{ "building", "necron_amplification_generator", false },
 			{ "building", "necron_amplification_generator", false },
 		        { "building", "necron_amplification_generator", false },
-			{ "building", "necron_amplification_generator", false }
+		        { "building", "necron_amplification_generator", false },
+		        { "building", "necron_amplification_generator", false },
+		        { "building", "necron_amplification_generator", false },
+			{ "building", "necron_summoning_core", false }
+
 		}
 	},
 }

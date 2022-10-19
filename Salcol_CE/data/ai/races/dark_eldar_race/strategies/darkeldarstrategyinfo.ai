@@ -24,11 +24,11 @@ BuildBaseStrategyInfo =
 		{
 			--number of engineers we're aiming for
 			want = 1,
-			tier1 = 2,
+			tier1 = 3,
 			tier2 = 5,
 			tier3 = 6,
 			tier4 = 8,
-                        max = 4,
+                        max = 8,
 		},
 		
 		-- Is used to modify the army strength in the build programs (Allows faster balancing adjustments)
@@ -145,8 +145,8 @@ BuildOrderStrategyInfo =
 		{
 			{ "flag_capture" }, { "flag_capture" },
 			{ "squad", "dark_eldar_squad_mandrake" },
-			{ "squad", "dark_eldar_squad_slave" },
 			{ "squad", "dark_eldar_squad_mandrake" },
+			{ "squad", "dark_eldar_squad_slave" },
 			{ "squad", "dark_eldar_squad_mandrake" },
 			{ "post_builder" },
 			{ "building", "dark_eldar_hall_of_blood", false },
@@ -159,8 +159,8 @@ BuildOrderStrategyInfo =
 			{ "flag_capture" }, { "flag_capture" }, 
 			{ "flag_capture" },
 			{ "squad", "dark_eldar_squad_mandrake" },
-			{ "squad", "dark_eldar_squad_slave" },
 			{ "squad", "dark_eldar_squad_mandrake" },
+			{ "squad", "dark_eldar_squad_slave" },
 			{ "squad", "dark_eldar_squad_mandrake" },
 			{ "squad", "dark_eldar_squad_mandrake" },
 			{ "squad", "dark_eldar_squad_mandrake" },
@@ -175,8 +175,8 @@ BuildOrderStrategyInfo =
 		{
 			{ "flag_capture" }, { "flag_capture" }, 
 			{ "squad", "dark_eldar_squad_mandrake" },
-			{ "squad", "dark_eldar_squad_slave" },
 			{ "squad", "dark_eldar_squad_mandrake" },
+			{ "squad", "dark_eldar_squad_slave" },
 			{ "squad", "dark_eldar_squad_mandrake" },
 			{ "post_builder" }, { "post_builder" },
 			{ "building", "dark_eldar_hall_of_blood", false },

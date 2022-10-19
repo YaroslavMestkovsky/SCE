@@ -53,7 +53,7 @@ end
 
 function VehicleTactic:ReadyToTransport()
 	return (self.m_iUsedTransportSlots < self.m_iTransportSlots and not self.squad_ai:WasRecentlyHurt() and
-			self.squad_ai:GetHealthPercentage() > 0.4 and not self.squad_ai:IsInCombat() and not self.m_bNeedRepair)
+			self.squad_ai:GetHealthPercentage() > 0.4 and not self.m_bNeedRepair)
 end
 
 function VehicleTactic:LoadSquad(oSquad, iSquadStrength)
@@ -69,7 +69,7 @@ function VehicleTactic:LoadSquad(oSquad, iSquadStrength)
 		oSquad:DoDefault(oEntity)
 		break
 	end
-	self.m_iMoveDelay = g_iGMT - 3
+	self.m_iMoveDelay = g_iGMT - 4
 end
 
 function VehicleTactic:UnloadTroops(iDistance)
@@ -214,7 +214,7 @@ function VehicleTactic:BeginHoldState()
 	
 	-- Check move delay
 	local vSquadPos = self.squad_ai:GetPosition()
-	local iDistance = distance_sqr(self.target, vSquadPos)	
+	local iDistance = distance_sqr(self:GetTarget(), vSquadPos)	
 	if (g_iGMT < self.m_iMoveDelay + 5 and self:IsMoving() and (iDistance > sqr(60) or self.squad_ai:IsInStateAttackMove())) then
 		Tactic.SetSubState( self, self.HoldState, "Holding" )
 		return
@@ -238,7 +238,7 @@ function VehicleTactic:BeginHoldState()
 	if (iDistance > sqr(60)) then
 	
 		-- If we get near the target area, then make an attack move if we're not in combat or attacking
-		cpu_manager:DoMove(self.squad_ai, self.target, true, "HoldState")
+		cpu_manager:DoMove(self.squad_ai, self:GetTarget(), true, "HoldState")
 
 	elseif (not self.squad_ai:IsAttacking() and not self.squad_ai:IsInStateAttackMove()) then
 	
@@ -265,7 +265,7 @@ function VehicleTactic:BeginHoldState()
 				elseif (iDistance > sqr(25) or self.squad_ai:WasRecentlyHurt()) then
 				
 					-- Move to target if we're hurt or not close enough
-					cpu_manager:DoMove(self.squad_ai, self.target, true, "HoldState")
+					cpu_manager:DoMove(self.squad_ai, self:GetTarget(), true, "HoldState")
 					self.m_iMoveDelay = g_iGMT
 				else
 					self.squad_ai:DoStop()
@@ -276,13 +276,13 @@ function VehicleTactic:BeginHoldState()
 		
 			-- If we are close to the target area, then make an attack move
 			if (iDistance < sqr(25) and not self.squad_ai:WasRecentlyHurt() and
-				not cpu_manager.terrain_analyzer:HasThreat(self.target, 35)) then
+				not cpu_manager.terrain_analyzer:HasThreat(self:GetTarget(), 35)) then
 				self.squad_ai:DoStop()
 				self.m_iMoveDelay = g_iGMT
 				Tactic.SetSubState(self, self.HoldState, "Holding")
 				return
 			end
-			cpu_manager:DoMove(self.squad_ai, self.target, true, "HoldState")
+			cpu_manager:DoMove(self.squad_ai, self:GetTarget(), true, "HoldState")
 			self.m_iMoveDelay = g_iGMT
 		end
 	end
@@ -358,7 +358,7 @@ function VehicleTactic:BeginRetreatState()
 	
 	-- Try to unload troops
 	local vSquadPos = self.squad_ai:GetPosition()
-	local iDistance = distance_sqr(self.target, vSquadPos)
+	local iDistance = distance_sqr(self:GetTarget(), vSquadPos)
 	if (self:UnloadTroops(iDistance)) then
 		self.m_iMoveDelay = g_iGMT - 3
 		Tactic.SetSubState(self, self.HoldState, "Holding")
@@ -367,7 +367,7 @@ function VehicleTactic:BeginRetreatState()
 	
 	-- Check for damaged vehicles close to start point
 	if (self.m_bNeedRepair and iDistance < sqr(50) and not self.squad_ai:WasRecentlyHurt() and
-		distance_sqr(self.target, cpu_manager.start_pos) < 1) then
+		distance_sqr(self:GetTarget(), cpu_manager.start_pos) < 1) then
 		
 		if ((self.squad_ai:IsInStateAttackMove() or self.squad_ai:IsInStateMove()) and not self:IsMoving()) then
 			self.squad_ai:DoStop()
@@ -388,12 +388,12 @@ function VehicleTactic:BeginRetreatState()
 	if (iDistance > sqr(50) or not self:IsDefender()) then
 	
 		-- If we are too far away from the retreat position, then make a basic move
-		cpu_manager:DoMove(self.squad_ai, self.target, false, "RetreatState Vehicle")
+		cpu_manager:DoMove(self.squad_ai, self:GetTarget(), false, "RetreatState Vehicle")
 		
 	elseif (iDistance > sqr(25) or self.squad_ai:WasRecentlyHurt()) then
 	
 		-- If we are in range of the retreat position, then make an attack move
-		cpu_manager:DoMove(self.squad_ai, self.target, true, "RetreatState Vehicle")
+		cpu_manager:DoMove(self.squad_ai, self:GetTarget(), true, "RetreatState Vehicle")
 	else
 		self.squad_ai:DoStop()
 	end
@@ -460,7 +460,7 @@ function VehicleTactic:BeginAttackState()
 	
 	-- Try to unload troops
 	local vSquadPos = self.squad_ai:GetPosition()
-	local iDistance = distance_sqr(self.target, vSquadPos)
+	local iDistance = distance_sqr(self:GetTarget(), vSquadPos)
 	if (self:UnloadTroops(iDistance)) then
 		self.m_iMoveDelay = g_iGMT - 3
 		Tactic.SetSubState(self, self.AttackingState, "Attacking")
@@ -474,7 +474,7 @@ function VehicleTactic:BeginAttackState()
 		if (iDistance > sqr(60)) then
 		
 			-- If we are too far away from the target, then make a simple attack move
-			cpu_manager:DoMove(self.squad_ai, self.target, true, "AttackState")
+			cpu_manager:DoMove(self.squad_ai, self:GetTarget(), true, "AttackState")
 		else
 
 			-- Check targets for melee squads
@@ -500,7 +500,7 @@ function VehicleTactic:BeginAttackState()
 					elseif (iDistance > sqr(25) or self.squad_ai:WasRecentlyHurt()) then
 					
 						-- Move to target if we're hurt or not close enough
-						cpu_manager:DoMove(self.squad_ai, self.target, true, "AttackState")
+						cpu_manager:DoMove(self.squad_ai, self:GetTarget(), true, "AttackState")
 						self.m_iMoveDelay = g_iGMT
 					else
 						self.squad_ai:DoStop()
@@ -511,13 +511,13 @@ function VehicleTactic:BeginAttackState()
 		
 				-- If we are close to the target area, then make an attack move
 				if (iDistance < sqr(25) and not self.squad_ai:WasRecentlyHurt() and
-					not cpu_manager.terrain_analyzer:HasThreat(self.target, 35)) then
+					not cpu_manager.terrain_analyzer:HasThreat(self:GetTarget(), 35)) then
 					self.squad_ai:DoStop()
 					self.m_iMoveDelay = g_iGMT
 					Tactic.SetSubState(self, self.HoldState, "Attacking")
 					return
 				end
-				cpu_manager:DoMove(self.squad_ai, self.target, true, "AttackState")
+				cpu_manager:DoMove(self.squad_ai, self:GetTarget(), true, "AttackState")
 				self.m_iMoveDelay = g_iGMT
 			end
 		end
@@ -559,12 +559,15 @@ function VehicleTactic:Retreat()
    if self.squad_ai:IsRanged() and self.squad_ai:CanJump() and 
 	  self.squad_ai:GetHealthPercentage() < self.hurt_level and
 	  self.squad_ai:WasRecentlyHurt() and not self.squad_ai:IsInStateMove() then 
-	 	 
+	local engi = function( esquad_ai )
+                     return esquad_ai:IsEngineer() and distance(self.squad_ai:GetPosition(),esquad_ai:GetPosition())<20
+        end
+	 if not cpu_manager:FindFirstFriendly(engi) then
 	  if not self:MoveToDisengage() then
 	  	
 		 self.squad_ai:DoMoveToClosestSafePoint( self.safe_point, self.tolerance )
 	  end
-	 
+	 end
 	  -- retreat twice
 	  self.hurt_level = 0.3	
    end
@@ -735,9 +738,9 @@ function VehicleTactic:Update()
 	
 	-- Check if vehicle needs repair
 	if (self.m_bNeedRepair) then
-			
+
 		-- Check if vehicle is repaired
-		aitrace("Current repair target = "..tostring(self.target.x)..", "..tostring(self.target.z))
+--		aitrace("Current repair target = "..tostring(self:GetTarget().x)..", "..tostring(self:GetTarget().z))
 		if (self.squad_ai:GetHealthPercentage() > 0.99) then
 	        self.m_bNeedRepair = false
 	        self.hurt_level = 0.6
@@ -778,7 +781,9 @@ function VehicleTactic:Update()
 	end
 	
 	-- Special moves
+        if not self:FocusEnemy() then
 	self:CloseOnEnemy()
+        end
 	
 	-- Do abilities
 	self:InitAbilities()

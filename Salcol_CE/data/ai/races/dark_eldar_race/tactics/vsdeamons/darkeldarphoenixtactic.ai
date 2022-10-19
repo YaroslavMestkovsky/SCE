@@ -57,10 +57,10 @@ function DarkEldarPhoenixTactic:JumpAttackRanged()
 	local iJumpRange = sqr(self.squad_ai:GetJumpDistance())
 	
 	-- Check if we can jump directly to the target
-	local iClosestDistance = distance_sqr(vDarkEldarPhoenixPosition, self.target)
+	local iClosestDistance = distance_sqr(vDarkEldarPhoenixPosition, self:GetTarget())
 	local vTargetPos = nil
 	if (iClosestDistance < iJumpRange) then
-		vTargetPos = self.target
+		vTargetPos = self:GetTarget()
 	else
 	
 		-- Get closest squad to target position
@@ -72,7 +72,7 @@ function DarkEldarPhoenixTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oSquad:GetPosition()
 				local iDistanceToDarkEldarPhoenix = distance_sqr(vPosition, vDarkEldarPhoenixPosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self.target)
+				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
 				if (iDistanceToDarkEldarPhoenix < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition
@@ -89,7 +89,7 @@ function DarkEldarPhoenixTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oBuilding:GetPosition()
 				local iDistanceToDarkEldarPhoenix = distance_sqr(vPosition, vDarkEldarPhoenixPosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self.target)
+				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
 				if (iDistanceToDarkEldarPhoenix < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition

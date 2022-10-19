@@ -77,7 +77,7 @@ end
 
 function DarkEldarSlaveTactic:Cannibalize()
 
-	if (not self.squad_ai:IsBuilding()) or self.squad_ai:IsIdle() then
+	if (not self.squad_ai:IsBuilding()) and self.squad_ai:IsIdle() then
 	
 		-- Check if we have corpses in range
 		local numCorpses = self.squad_ai:GetNumCorpses(70);

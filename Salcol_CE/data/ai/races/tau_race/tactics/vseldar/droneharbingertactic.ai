@@ -17,12 +17,12 @@ end
 function DroneHarbingerTactic:BeginHoldState()
 
 	-- Check if we've a valid target
-	if (self.target == nil or self.variant_type ~= Tactic.Variant.Vector or self:IsInSubState()) then
+	if (self:GetTarget() == nil or self.variant_type ~= Tactic.Variant.Vector or self:IsInSubState()) then
 	    return
 	end
 
 	-- Check if we're close enough to spawn drones
-	if (self.m_bKeepSpawnDistance and distance_sqr(self.target, self.squad_ai:GetPosition()) < sqr(70)) then
+	if (self.m_bKeepSpawnDistance and distance_sqr(self:GetTarget(), self.squad_ai:GetPosition()) < sqr(70)) then
 		
 		-- Check if we're moving
 		if (self.squad_ai:IsInStateAttackMove() or self.squad_ai:IsInStateMove()) then
@@ -39,7 +39,7 @@ end
 function DroneHarbingerTactic:BeginAttackState()
 
 	-- Check if we've a valid target
-	if (self.target == nil or self.variant_type ~= Tactic.Variant.Vector or self:IsInSubState()) then
+	if (self:GetTarget() == nil or self.variant_type ~= Tactic.Variant.Vector or self:IsInSubState()) then
 	    return
 	end
 

@@ -343,37 +343,19 @@ function DaemonhuntBuildBaseStrategy:UpdateTierLevel()
 end
 
 function DaemonhuntBuildBaseStrategy:CheckTech()
-        self.techongo = false
-        local type = nil
-        local name = nil
         if self.tierLevel == 1 then
-        type = research
-        name = "inquisition_daemonhunter_1"
+        self.techongotype = research
+        self.techongoname = "inquisition_daemonhunter_1"
         elseif self.tierLevel == 2 then
-        type = building
-        name = "inquisition_astra_telepathica"
+        self.techongotype = building
+        self.techongoname = "inquisition_astra_telepathica"
         elseif self.tierLevel == 3 then
-        type = addon
-        name = "inquisition_tower_addon"
+        self.techongotype = addon
+        self.techongoname = "inquisition_tower_addon"
         elseif self.tierLevel == 4 then
-        type = research
-        name = "inquisition_absolute_purification"
+        self.techongotype = research
+        self.techongoname = "inquisition_absolute_purification"
         end
-       
-        if type == addon then
-        local iTechID = cpu_manager.stats:GetAddOnID(name)
-        elseif type == research then
-        local iTechID = cpu_manager.stats:GetResearchID(name)
-        elseif type == building then
-        local iTechID = cpu_manager.stats:GetBuildingID(name)
-        end
-	for oBuildChannel in build_manager:GetBuildChannelAIs() do
-		-- Check type ID
-		if (oBuildChannel:GetBlueprintID() == iTechID) then
-			self.techongo = true
-                        return
-		end
-	end     
 end
 
 function DaemonhuntBuildBaseStrategy:BuildFlexible()
@@ -490,7 +472,7 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
 			end
 
 			-- Compute HQ Tier2 Addons for future HQs
-			if (self:GetBuildingCountByName("inquisition_tower_hq") > 1) and (iRequisition >= 3500 and iPower >= 3500) then
+			if (self:GetBuildingCountByName("inquisition_tower_hq") > 1) and (iRequisition >= 200000 and iPower >= 20000) then
 				self:DynamicAddon("inquisition_tower_addon", 100, 2, 1000, 1000, 0, 0, nil, nil, false)
 			end
 		end
@@ -552,10 +534,10 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
                         end
 
                         if iRequisition >= 900 then
-                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 12, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 30, 30, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 40, 30, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 50, 40, nil, 0)
                         end
 
 			-- Compute bonus researches
@@ -674,7 +656,7 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
               if iRequisition >= 100 and iPower >= 100 then
 		self:DynamicAddon("inquisition_imperial_icon_addon_1", 1*Numpoint, 1, 0, 0, 0, 0, nil, nil, false)
               end
-              if iRequisition >= 300 and iPower >= 300 then
+              if iRequisition >= 500 and iPower >= 700 then
 		self:DynamicAddon("inquisition_imperial_icon_addon_2", 1*Numpoint, 2, 0, 0, 0, 0, nil, nil, false)
               end
 

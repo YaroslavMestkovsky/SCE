@@ -197,48 +197,30 @@ function TauBuildBaseStrategy:UpdateTierLevel()
 end
 
 function TauBuildBaseStrategy:CheckTech()
-        self.techongo = false
-        local type = nil
-        local name = nil
         if self.tierLevel == 1 then
-        type = building
-        name = "tau_research_building"
+        self.techongotype = building
+        self.techongoname = "tau_research_building"
         elseif self.tierLevel == 2 then
-        type = building
+        self.techongotype = building
        if self.m_iPathResearch == 1 then
-        name = "tau_shrine_of_kauyon"
+        self.techongoname = "tau_shrine_of_kauyon"
        else
-        name = "tau_shrine_of_montka"
+        self.techongoname = "tau_shrine_of_montka"
        end 
         elseif self.tierLevel == 3 then
-        type = research
+        self.techongotype = research
        if self.m_iPathResearch == 1 then
-        name = "tau_teachings_of_kauyon_research"
+        self.techongoname = "tau_teachings_of_kauyon_research"
        else
-        name = "tau_teachings_of_montka_research"
+        self.techongoname = "tau_teachings_of_montka_research"
        end
         elseif self.tierLevel == 4 then
-        type = research
-        name = "tau_path_to_destruction_research"
+        self.techongotype = research
+        self.techongoname = "tau_path_to_destruction_research"
         elseif self.tierLevel == 5 then
-        type = research
-        name = "tau_apocalypse_research"
-        end
-       
-        if type == addon then
-        local iTechID = cpu_manager.stats:GetAddOnID(name)
-        elseif type == research then
-        local iTechID = cpu_manager.stats:GetResearchID(name)
-        elseif type == building then
-        local iTechID = cpu_manager.stats:GetBuildingID(name)
-        end
-	for oBuildChannel in build_manager:GetBuildChannelAIs() do
-		-- Check type ID
-		if (oBuildChannel:GetBlueprintID() == iTechID) then
-			self.techongo = true
-                        return
-		end
-	end     
+        self.techongotype = research
+        self.techongoname = "tau_apocalypse_research"
+        end  
 end
 
 function TauBuildBaseStrategy:BuildFlexible()
@@ -426,10 +408,10 @@ function TauBuildBaseStrategy:BuildFlexible()
                         end
 
                         if iRequisition >= 900 then
-                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 12, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 30, 30, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 40, 30, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 50, 40, nil, 0)
                         end
 
 			-- Compute Wall Research
@@ -551,7 +533,7 @@ function TauBuildBaseStrategy:BuildFlexible()
               if iRequisition >= 100 and iPower >= 100 then
 		self:DynamicAddon("addon_tau_list_post_1", 1*Numpoint, 1, 0, 0, 0, 0, nil, nil, false)
               end
-              if iRequisition >= 300 and iPower >= 300 then
+              if iRequisition >= 500 and iPower >= 700 then
 		self:DynamicAddon("addon_tau_list_post_2", 1*Numpoint, 2, 0, 0, 0, 0, nil, nil, false)
               end
 

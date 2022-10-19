@@ -42,7 +42,7 @@ function BuildUnitPlan:ObtainBuilder()
 			
 			if (item_index ~= BuildChannelAI.INVALID_INDEX) then
 		
-				if (build_channel:CanAddToQueue( BuildChannelAI.PQ_Squad, self.item_id ) == BuildChannelAI.CANBUILD_Ok) then
+				if (build_channel:CanAddToQueue( BuildChannelAI.PQ_Squad, self.item_id ) == BuildChannelAI.CANBUILD_Ok) and not cpu_manager:IsHQ(build_channel:GetBlueprintID()) then
 					
 					-- Check that I have enough squad cap
 		--[[			local squad_cap_req = unit_stats:GetSquadCapReq()
@@ -56,7 +56,20 @@ function BuildUnitPlan:ObtainBuilder()
 						builder = build_channel
 						break
 				--	end
-				end
+				else
+					-- Check that I have enough squad cap
+					local squad_cap_req = unit_stats:GetSquadCapReq()
+					local support_cap_req = unit_stats:GetSupportCapReq()
+					local iSquadCapLeft = math.max(build_manager:GetSquadCapLeft(), 0)
+					local iSupportCapLeft = math.max(build_manager:GetSupportCapLeft(), 0)
+					if ((squad_cap_req == 0 or iSquadCapLeft - squad_cap_req >= 0) and 
+						(support_cap_req == 0 or iSupportCapLeft - support_cap_req >= 0)) then
+					
+						--lock and save it!
+						builder = build_channel
+						break
+					end
+                                end
 			end
 		end
 	end

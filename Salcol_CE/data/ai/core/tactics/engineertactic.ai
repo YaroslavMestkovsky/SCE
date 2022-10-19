@@ -65,6 +65,19 @@ function EngineerTactic:Update()
 
 	-- Arkhan 01.2006: Check state
 	local vSquadPos = self.squad_ai:GetPosition()
+       if self.squad_ai:IsIdle() and not self.squad_ai:IsBuildProgressing() and self.squad_ai:IsBuilding() == 0 then
+        local engineer_squad = nil
+
+        if table.getn(EngineerTactic.Bufer) > 0 then
+         for iLoop1 in EngineerTactic.Bufer do
+                engineer_squad = EngineerTactic.Bufer[iLoop1][2]
+		        if (self.squad_ai:GetSquad():GetID() == engineer_squad:GetID()) then
+			table.remove(EngineerTactic.Bufer, iLoop1)
+                        self.m_Bufer = false
+		end
+	  end
+        end
+
 	if (self.squad_ai:IsLocked()) then
 	
 		-- Arkhan 01.2006: Reset destination if squad is locked
@@ -111,6 +124,7 @@ function EngineerTactic:Update()
 		--aitrace("EngineerTactic: Goto3...")
 		self:GoToNextPost()
 	end	
+       end
 	
 	--aitrace("EngineerTactic: Nothing...")
 	return true
@@ -126,22 +140,10 @@ function EngineerTactic:GoToNextPost()
         self.m_numEngineerOnRepairBuilding = 0
         self.m_numEngineerOnRepairVehicle = 0
 
-        local engineer_squad = nil
-
-        if table.getn(EngineerTactic.Bufer) > 0 then
-         for iLoop1 in EngineerTactic.Bufer do
-                engineer_squad = EngineerTactic.Bufer[iLoop1][2]
-		        if (self.squad_ai:GetSquad():GetID() == engineer_squad:GetID()) then
-			table.remove(EngineerTactic.Bufer, iLoop1)
-                        self.m_Bufer = false
-		end
-	 end
-        end
-
 	-- Try to reach a save position if HQ is attacked
 	self.m_bBusy = false
 	local vEngineerPos = self.squad_ai:GetPosition()
-	if (cpu_manager:HQThreat() or self.squad_ai:WasRecentlyHurt()) then
+	if (self.squad_ai:WasRecentlyHurt()) then
 		local vBasePos = cpu_manager:FindClosestFriendlyBaseOrStrategicPoint(vEngineerPos, cpu_manager.start_pos, true, true)
 		if (vBasePos ~= nil) then
 			self:ValidMove(vBasePos)
@@ -163,7 +165,7 @@ function EngineerTactic:GoToNextPost()
 	  end
          end
               local necronrace = cpu_manager.player_stats:GetPlayerRaceName() == "necron_race"
-              if ((self.m_numEngineerOnBuild < 1 and g_iGMT > 90 and g_iGMT < 300 and necronrace) or (self.m_numEngineerOnBuild < 1 and not necronrace)) and ((g_iGMT < 300 and not necronrace) or cpu_manager:IsHQ(oBuildingToFinish:GetID())) then
+              if (self.m_numEngineerOnBuild < 1 and not necronrace) and ((g_iGMT < 300 and not necronrace) or cpu_manager:IsHQ(oBuildingToFinish:GetID())) then
 		aitrace("EngineerTactic: Help finishing a building...")
 		self.squad_ai:DoFinishBuilding(oBuildingToFinish)
 		self.m_vDestination = oBuildingToFinish:GetPosition()
@@ -192,7 +194,7 @@ function EngineerTactic:GoToNextPost()
 	         	        end
 	           end
                   end
-                    if (((stVehicleToRepair >= 300 and not rVehicleToRepair15) or (stVehicleToRepair >= 500) or not rVehicleToRepair35)) and (self.m_numEngineerOnRepairVehicle < 2) then
+                    if (((stVehicleToRepair >= 300 and not rVehicleToRepair15) or (stVehicleToRepair >= 500) or not rVehicleToRepair35)) and (self.m_numEngineerOnRepairVehicle < 1) then
 			aitrace("EngineerTactic: Repairing vehicle...")
 			self.squad_ai:DoRepairSquad(oVehicleToRepair)
 			self.m_vDestination = oVehicleToRepair:GetPosition()

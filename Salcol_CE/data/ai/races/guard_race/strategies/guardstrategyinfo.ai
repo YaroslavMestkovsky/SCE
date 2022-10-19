@@ -188,7 +188,7 @@ BuildOrderStrategyInfo =
 			{ "squad", "guard_squad_guardsmen" },
 			{ "squad", "guard_squad_guardsmen" },
 			{ "squad", "guard_squad_guardsmen" },
-			{ "post_builder" }, { "post_builder" }, 
+			{ "post_builder" },{ "post_builder" },
 			{ "building", "guard_infantry", false },
 			{ "building", "guard_plasma_generator", true }
 		},
@@ -203,7 +203,7 @@ BuildOrderStrategyInfo =
 			{ "squad", "guard_squad_guardsmen" },
 			{ "squad", "guard_squad_guardsmen" },
 			{ "squad", "guard_squad_guardsmen_rider" },
-			{ "post_builder" }, { "post_builder" },
+			{ "post_builder" },{ "post_builder" },
 			{ "building", "guard_infantry", false },
 			{ "building", "guard_infantry", false },
 			{ "building", "guard_plasma_generator" }
@@ -217,7 +217,7 @@ BuildOrderStrategyInfo =
 			{ "squad", "guard_squad_guardsmen" },
 			{ "squad", "guard_squad_enginseer" },
 			{ "squad", "guard_squad_guardsmen" },
-			{ "post_builder" }, { "post_builder" },
+			{ "post_builder" },{ "post_builder" },
 			{ "building", "guard_infantry", false },
 			{ "building", "guard_plasma_generator" }
 		}

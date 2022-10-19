@@ -20,7 +20,14 @@ end
 function SistersLightningStrikeTactic:SetTarget( target, variant_type )
 
 	self.variant_type = variant_type
-	self.target = Vector3f(target)
+	self.variant_type = variant_type
+       if self.variant_type==Tactic.Variant.Vector then
+    self.target = Vector3f(target)
+       elseif self.variant_type==Tactic.Variant.SquadAI then
+    self.target = target
+       elseif self.variant_type==Tactic.Variant.BaseAI then
+    self.target = target
+       end
 	self.m_iMoveDelay = 0
 	self.last_jump = 0
 end
@@ -57,10 +64,10 @@ function SistersLightningStrikeTactic:JumpAttackRanged()
 	local iJumpRange = sqr(self.squad_ai:GetJumpDistance())
 	
 	-- Check if we can jump directly to the target
-	local iClosestDistance = distance_sqr(vSistersLightningStrikePosition, self.target)
+	local iClosestDistance = distance_sqr(vSistersLightningStrikePosition, self:GetTarget())
 	local vTargetPos = nil
 	if (iClosestDistance < iJumpRange) then
-		vTargetPos = self.target
+		vTargetPos = self:GetTarget()
 	else
 	
 		-- Get closest squad to target position
@@ -72,7 +79,7 @@ function SistersLightningStrikeTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oSquad:GetPosition()
 				local iDistanceToSistersLightningStrike = distance_sqr(vPosition, vSistersLightningStrikePosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self.target)
+				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
 				if (iDistanceToSistersLightningStrike < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition
@@ -89,7 +96,7 @@ function SistersLightningStrikeTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oBuilding:GetPosition()
 				local iDistanceToSistersLightningStrike = distance_sqr(vPosition, vSistersLightningStrikePosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self.target)
+				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
 				if (iDistanceToSistersLightningStrike < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition

@@ -17,7 +17,14 @@ end
 function PylonTactic:SetTarget( target, variant_type )
 
 	self.variant_type = variant_type
-	self.target = Vector3f(target)
+	self.variant_type = variant_type
+       if self.variant_type==Tactic.Variant.Vector then
+    self.target = Vector3f(target)
+       elseif self.variant_type==Tactic.Variant.SquadAI then
+    self.target = target
+       elseif self.variant_type==Tactic.Variant.BaseAI then
+    self.target = target
+       end
 	self.m_iMoveDelay = 0
 	self.last_jump = 0
 end
@@ -104,10 +111,10 @@ function PylonTactic:JumpAttackRanged()
 	local iJumpRange = sqr(self.squad_ai:GetJumpDistance())
 	
 	-- Check if we can jump directly to the target
-	local iClosestDistance = distance_sqr(vPylonPosition, self.target)
+	local iClosestDistance = distance_sqr(vPylonPosition, self:GetTarget())
 	local vTargetPos = nil
 	if (iClosestDistance < iJumpRange) then
-		vTargetPos = self.target
+		vTargetPos = self:GetTarget()
 	else
 	
 		-- Get closest squad to target position
@@ -119,7 +126,7 @@ function PylonTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oSquad:GetPosition()
 				local iDistanceToPylon = distance_sqr(vPosition, vPylonPosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self.target)
+				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
 				if (iDistanceToPylon < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition
@@ -136,7 +143,7 @@ function PylonTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oBuilding:GetPosition()
 				local iDistanceToPylon = distance_sqr(vPosition, vPylonPosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self.target)
+				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
 				if (iDistanceToPylon < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition

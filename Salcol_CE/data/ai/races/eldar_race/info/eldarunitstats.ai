@@ -229,27 +229,27 @@ EldarUnitStats =
 		{
 			{
 				name = "eldar_long_rifle",
-				effectiveness = GenerateUnitEffectiveness(math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,6.1,2.3,3.1,3.7,1.9,0.0,0.0,0.0,0.0),
+				effectiveness = GenerateUnitEffectiveness(math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,6.1,2.3,9.0,3.7,1.9,0.0,0.0,0.0,0.0),
 				range = UnitStatsAI.RT_Ranged,
 			},
 			{
 				name = "eldar_long_rifle_tier_2",
-				effectiveness = GenerateUnitEffectiveness(1.8,2.4,1.1,1.6,1.4,0.2,0.0,0.0,1.9,1.4,1.6,0.3,0.0,0.0,0.0,0.0,0.0),
+				effectiveness = GenerateUnitEffectiveness(1.8,2.4,1.1,1.6,1.4,0.2,0.0,0.0,1.9,1.4,9.0,0.3,0.0,0.0,0.0,0.0,0.0),
 				range = UnitStatsAI.RT_Ranged,
 			},
 			{
 				name = "eldar_long_rifle_tier_3",
-				effectiveness = GenerateUnitEffectiveness(2.4,2.7,1.2,2.3,2.0,0.2,0.0,0.0,2.3,1.8,2.2,0.3,0.2,0.0,0.0,0.0,0.0),
+				effectiveness = GenerateUnitEffectiveness(2.4,2.7,1.2,2.3,2.0,0.2,0.0,0.0,2.3,1.8,9.0,0.3,0.2,0.0,0.0,0.0,0.0),
 				range = UnitStatsAI.RT_Ranged,
 			},
 			{
 				name = "eldar_long_rifle_tier_4",
-				effectiveness = GenerateUnitEffectiveness(3.1,3.4,1.6,2.9,2.6,0.2,0.0,0.0,2.9,2.3,2.8,0.4,0.2,0.0,0.0,0.0,0.0),
+				effectiveness = GenerateUnitEffectiveness(3.1,3.4,1.6,2.9,2.6,0.2,0.0,0.0,2.9,2.3,9.0,0.4,0.2,0.0,0.0,0.0,0.0),
 				range = UnitStatsAI.RT_Ranged,
 			},
 			{
 				name = "eldar_knife_ranger",
-				effectiveness = GenerateUnitEffectiveness(2.8,3.1,2.0,2.2,0.0,0.0,0.0,0.0,2.2,0.0,1.4,0.0,0.0,0.0,0.0,0.0,0.0),
+				effectiveness = GenerateUnitEffectiveness(2.8,3.1,2.0,2.2,0.0,0.0,0.0,0.0,2.2,0.0,9.0,0.0,0.0,0.0,0.0,0.0,0.0),
 				range = UnitStatsAI.RT_Melee,
 			},
 		}
@@ -409,7 +409,7 @@ EldarUnitStats =
 		{
 			{
 				name = "eldar_fusion_gun",
-				effectiveness = GenerateUnitEffectiveness(math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,6.1,2.3,3.1,3.7,1.9,0.0,0.0,0.0,0.0),
+				effectiveness = GenerateUnitEffectiveness(math.random(3*10,4*10)/10,math.random(3*10,4*10)/10,math.random(3*10,4*10)/10,math.random(3*10,4*10)/10,math.random(3*10,4*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,math.random(5*10,6*10)/10,6.1,2.3,3.1,5.7,5.9,5.5,5.5,5.5,5.5),
 				range = UnitStatsAI.RT_ShortRanged,
 			},
 			{

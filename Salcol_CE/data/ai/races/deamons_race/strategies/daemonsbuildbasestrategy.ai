@@ -297,40 +297,22 @@ function DaemonsBuildBaseStrategy:UpdateTierLevel()
 end
 
 function DaemonsBuildBaseStrategy:CheckTech()
-        self.techongo = false
-        local type = nil
-        local name = nil
         if self.tierLevel == 1 then
-        type = addon
-        name = "addon_daemons_hq_1"
+        self.techongotype = addon
+        self.techongoname = "addon_daemons_hq_1"
         elseif self.tierLevel == 2 then
-        type = addon
-        name = "addon_daemons_hq_2"
+        self.techongotype = addon
+        self.techongoname = "addon_daemons_hq_2"
         elseif self.tierLevel == 3 then
-        type = addon
-        name = "addon_daemons_hq_3"
+        self.techongotype = addon
+        self.techongoname = "addon_daemons_hq_3"
         elseif self.tierLevel == 4 then
-        type = addon
-        name = "addon_daemons_hq_4"
+        self.techongotype = addon
+        self.techongoname = "addon_daemons_hq_4"
         elseif self.tierLevel == 5 then
-        type = addon
-        name = "addon_daemons_hq_5"
-        end
-       
-        if type == addon then
-        local iTechID = cpu_manager.stats:GetAddOnID(name)
-        elseif type == research then
-        local iTechID = cpu_manager.stats:GetResearchID(name)
-        elseif type == building then
-        local iTechID = cpu_manager.stats:GetBuildingID(name)
-        end
-	for oBuildChannel in build_manager:GetBuildChannelAIs() do
-		-- Check type ID
-		if (oBuildChannel:GetBlueprintID() == iTechID) then
-			self.techongo = true
-                        return
-		end
-	end     
+        self.techongotype = addon
+        self.techongoname = "addon_daemons_hq_5"
+        end   
 end
 
 function DaemonsBuildBaseStrategy:BuildFlexible()
@@ -441,7 +423,7 @@ T5	daemons_research_gift25	 (Minions Only)	        Tzeentch's Precision ability 
 		if (self.tierLevel >= 1) then
 
 			-- Compute HQ Tier2 Addons for future HQs
-			if (self:GetBuildingCountByName("daemon_hq") > 1 and (iPower >= 15000 and iRequisition >= 15000)) then
+			if (self:GetBuildingCountByName("daemon_hq") > 1 and (iRequisition >= 200000 and iPower >= 20000)) then
 				self:DynamicAddon("addon_daemons_hq_1", 100, 1, 400, 130, 0, 0, nil, nil, false)
 			end
 		end
@@ -464,7 +446,7 @@ T5	daemons_research_gift25	 (Minions Only)	        Tzeentch's Precision ability 
 			end
 
 			-- Compute HQ Tier2 Addons for future HQs
-			if (self:GetBuildingCountByName("daemon_hq") > 1 and (iPower >= 15000 and iRequisition >= 15000)) then
+			if (self:GetBuildingCountByName("daemon_hq") > 1 and (iRequisition >= 200000 and iPower >= 20000)) then
 				self:DynamicAddon("addon_daemons_hq_2", 100, 2, 500, 500, 0, 0, nil, nil, false)
 			end
 		end
@@ -491,14 +473,14 @@ T5	daemons_research_gift25	 (Minions Only)	        Tzeentch's Precision ability 
                         end
 
                         if iRequisition >= 900 then
-                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 0, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 12, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 30, 30, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 40, 30, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 50, 40, nil, 0)
                         end
 
 			-- Compute HQ Tier3 Addons for future HQs
-			if (self:GetBuildingCountByName("daemon_hq") > 1) and (iPower >= 5000 and iRequisition >= 5000) then
+			if (self:GetBuildingCountByName("daemon_hq") > 1) and (iRequisition >= 200000 and iPower >= 20000) then
 				self:DynamicAddon("addon_daemons_hq_3", 100, 3, 1000, 1000, 0, 0, nil, nil, false)
 			end
 		end

@@ -133,7 +133,7 @@ function CapturePlan:__init( base_location ) super( CpuPlayer.CT_Resourcing )
 	Plan.SetState( self, "Capture Flag", CapturePlan.CaptureFlag )
 	Plan.SetNeeds( self, "Obtain ressources", CapturePlan.ObtainRessources )
 	
-	self.m_iThreatRange = math.random(35,60)
+	self.m_iThreatRange = 45
 	
 	self.m_iNextUpdate = 0
 end
@@ -221,7 +221,7 @@ function CapturePlan:FindFreeStrategicPoint()
 	if (table.getn(aCapturers) < 1) and (table.getn(aCapturersHigh) < 1)  then
 		return false
 	end
---[[        if (table.getn(BuildOrderStrategy.mid_capture_flag) ~= 0) and g_iGMT < 60 then
+        if (table.getn(BuildOrderStrategy.mid_capture_flag) ~= 0) and (g_iGMT < 60 and Strategy:GetMapSize()=="large") or (g_iGMT < 50 and Strategy:GetMapSize()=="small") or (g_iGMT < 50 and Strategy:GetMapSize()=="medium")then
          for iLoop1 in BuildOrderStrategy.mid_capture_flag do
           local oMidFlag = BuildOrderStrategy.mid_capture_flag[iLoop1]
           self.capturing_flag = oMidFlag
@@ -231,12 +231,13 @@ function CapturePlan:FindFreeStrategicPoint()
 				break
 			
 		end
-          table.remove(BuildOrderStrategy.mid_capture_flag, iLoop1)
+         -- table.remove(BuildOrderStrategy.mid_capture_flag, iLoop1)
+            BuildOrderStrategy.mid_capture_flag = {}
           break
          end
         end
         
-       if (table.getn(BuildOrderStrategy.mid_capture_flag) == 0) or g_iGMT > 60 then]]
+       if ((table.getn(BuildOrderStrategy.mid_capture_flag) == 0) or g_iGMT > 30) and self.capturing_flag == nil and self.capturing_squad == nil then
 
 	-- Check last update
 	if (g_iGMT > CapturePlan.LastStratUpdate) then
@@ -254,7 +255,7 @@ function CapturePlan:FindFreeStrategicPoint()
 				
 				-- Don't capture strats from allies or close to enemy base during harassing time
 				local bTakeStrat = true
-				if (g_iGMT < DefendChokePointPlan.HarassingTime * 30) then
+				if (g_iGMT < DefendChokePointPlan.HarassingTime * 40) then
 					
 					-- Check distance to enemy and allies
 					local iPathingDistanceToMyBase	= CapturePlan.OrderedStratPoints[iLoop1][3]
@@ -292,35 +293,38 @@ function CapturePlan:FindFreeStrategicPoint()
 	
 			-- Get position
 			local vStratPos = oStrategicPoint:GetPosition()
-			local vPosThreat = cpu_manager.terrain_analyzer:GetThreatAtPos(vStratPos, self.m_iThreatRange, false)
+	--		local vPosThreat = cpu_manager.terrain_analyzer:GetThreatAtPos(vStratPos, self.m_iThreatRange, false)
+			local vPosThreat, iAlliedStrength = cpu_manager:GetArmyStrengthAtPos(vStratPos, self.m_iThreatRange, true)
 
                if (table.getn(aCapturersHigh) > 0) and self.capturing_squad == nil then
 				for iLoop2 in aCapturersHigh do
-                                 local vPosThreat1 = vPosThreat+aCapturersHigh[iLoop2][2]
-				 if (oStrategicPoint:IsStrategicObjective() and vPosThreat1>0 and vPosThreat<0) then
+                                 local vPosThreat1 = vPosThreat-aCapturersHigh[iLoop2][2]
+				 if (oStrategicPoint:IsStrategicObjective() and vPosThreat1<0 and vPosThreat>0) and g_iGMT>100 then
 					self.capturing_squad = aCapturersHigh[iLoop2][1]
 					table.remove(aCapturersHigh, iLoop2)
 				 end
                                 end
                end
 
-               if (cpu_manager:GetShortestPathingDistance(cpu_manager.start_pos, vStratPos) < 100) and g_iGMT>40 and self.capturing_squad ==nil then
+               if (cpu_manager:GetShortestPathingDistance(cpu_manager.start_pos, vStratPos) < 100) and g_iGMT>70 and self.capturing_squad ==nil then
 				-- Check capturer paths
 				for iLoop2 in aCapturers do
+                                   if  (not cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30)) or (cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30) and aCapturers[iLoop2][2]>=200) then
 						self.capturing_squad = aCapturers[iLoop2][1]
 						table.remove(aCapturers, iLoop2)
+                                   end
 				end
                end
 
                if self.capturing_squad == nil then
 				-- Check capturer paths
 				for iLoop2 in aCapturers do
-                                 local vPosThreat1 = vPosThreat+aCapturers[iLoop2][2]
-				 if vPosThreat >= 0 or vPosThreat1 >= 0 then
+                                 local vPosThreat1 = vPosThreat-aCapturers[iLoop2][2]
+				 if vPosThreat == 0 or vPosThreat1 <= 0 then
 					-- Check path to strategic point
 					if ((distance_sqr(aCapturers[iLoop2][3], vStratPos) < sqr(self.m_iThreatRange) or
-						not cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30) or vPosThreat1 > 0)) then
-                                                if  (not oStrategicPoint:IsRelic() and g_iGMT<60) or g_iGMT>60 then
+						not cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30) or vPosThreat1 < 0)) then
+                                                if  ((not oStrategicPoint:IsRelic() and g_iGMT<120) or g_iGMT>70) and not oStrategicPoint:IsStrategicObjective() and (not cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30)) or (cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30) and aCapturers[iLoop2][2]>=200) then
 						self.capturing_squad = aCapturers[iLoop2][1]
 						table.remove(aCapturers, iLoop2)
 						break
@@ -328,11 +332,41 @@ function CapturePlan:FindFreeStrategicPoint()
 					end
 				 end
 				end
+                end
+
+               if (cpu_manager:GetShortestPathingDistance(cpu_manager.start_pos, vStratPos) < 70) and self.capturing_squad == nil and g_iGMT>30 and not oStrategicPoint:IsRelic() and not oStrategicPoint:IsStrategicObjective() then
+				-- Check capturer paths
+				for iLoop2 in aCapturers do
+                                   if  (not cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30)) or (cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30) and aCapturers[iLoop2][2]>=200) then
+						self.capturing_squad = aCapturers[iLoop2][1]
+						table.remove(aCapturers, iLoop2)
+                                   end
+				end
+               end
+
+
+               if self.capturing_squad == nil then
+				-- Check capturer paths
+				for iLoop2 in aCapturers do
+                                 local vPosThreat1 = vPosThreat-aCapturers[iLoop2][2]
+				 if vPosThreat == 0 or vPosThreat1 <= 0 then
+					-- Check path to strategic point
+					if ((distance_sqr(aCapturers[iLoop2][3], vStratPos) < sqr(self.m_iThreatRange) or
+						not cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30) or vPosThreat1 > 0)) then
+                                                if  not cpu_manager:HasThreatOnPath(aCapturers[iLoop2][3], vStratPos, 30) and oStrategicPoint:IsStrategicObjective() and (g_iGMT>150 or resource_manager:GetNumOwnedStrategicPoints()>4) then
+						self.capturing_squad = aCapturers[iLoop2][1]
+						table.remove(aCapturers, iLoop2)
+						break
+                                                end
+					end
+				 end
+				end
+                end
+
 				if (self.capturing_squad == nil and oStrategicPoint:IsStrategicObjective() and bEmergency) then
 					self.capturing_squad = aCapturers[1][1]
 					table.remove(aCapturers, 1)
 				end
-                end
 	
 			-- Try to capture if no threat or we've an emergency and the strat point is a critical
 			if (self.capturing_squad ~= nil) then
@@ -345,7 +379,7 @@ function CapturePlan:FindFreeStrategicPoint()
 		end
 		table.remove(CapturePlan.StratPoints, iLoop1)
 	end
---       end
+       end
 
 	-- Check if we found a flag to capture
 	if (self.capturing_flag ~= nil and self.capturing_squad ~= nil) then
@@ -513,7 +547,7 @@ function CapturePlan:CapturingFlag()
 		if (g_iGMT > DefendChokePointPlan.HarassingTime * 60 and distance_sqr(vPos, vFlagPos) > sqr(35)) then
 			aitrace("CapturePlan: Abort capturing! Too dangerous!")
 			self:FreeRessources(true)
-			self.m_iNextUpdate = g_iGMT + 1
+			self.m_iNextUpdate = g_iGMT + 3
 			return
 		end
 		
@@ -529,7 +563,7 @@ function CapturePlan:CapturingFlag()
 			aitrace("CapturePlan: Abort capturing! Too dangerous!")
 			aitrace("CapturePlan: Power = "..tostring(iAlliedStrength).." Threat = "..tostring(iEnemyStrength))
 			self:FreeRessources(true)
-			self.m_iNextUpdate = g_iGMT + 1
+			self.m_iNextUpdate = g_iGMT + 3
 			return
 		end
 		
@@ -537,7 +571,7 @@ function CapturePlan:CapturingFlag()
 		if (self:CheckStealthThreat(vPos)) then
 			aitrace("CapturePlan: Abort capturing! Can't attack stealth troops!")
 			self:FreeRessources(true)
-			self.m_iNextUpdate = g_iGMT + 1
+			self.m_iNextUpdate = g_iGMT + 3
 			return
 		end
 		

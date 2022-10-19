@@ -51,10 +51,10 @@ function HarbingerDronesTactic:DoAttack()
 	end
 
 	-- Get closest enemy
-	self.target = self:SearchTarget()
+	self:GetTarget() = self:SearchTarget()
 	
 	-- Attack move to target
-	self.squad_ai:DoAttackMove(self.target)
+	self.squad_ai:DoAttackMove(self:GetTarget())
 	self.m_iMoveDelay = g_iGMT	
 end
 
