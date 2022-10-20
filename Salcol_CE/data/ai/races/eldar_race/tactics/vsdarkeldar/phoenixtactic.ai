@@ -56,10 +56,10 @@ function PhoenixTactic:JumpAttackRanged()
 	local iJumpRange = sqr(self.squad_ai:GetJumpDistance())
 	
 	-- Check if we can jump directly to the target
-	local iClosestDistance = distance_sqr(vPhoenixPosition, self:GetTarget())
+	local iClosestDistance = distance_sqr(vPhoenixPosition, self.target)
 	local vTargetPos = nil
 	if (iClosestDistance < iJumpRange) then
-		vTargetPos = self:GetTarget()
+		vTargetPos = self.target
 	else
 	
 		-- Get closest squad to target position
@@ -71,7 +71,7 @@ function PhoenixTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oSquad:GetPosition()
 				local iDistanceToPhoenix = distance_sqr(vPosition, vPhoenixPosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
+				local iDistanceToTarget = distance_sqr(vPosition, self.target)
 				if (iDistanceToPhoenix < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition
@@ -88,7 +88,7 @@ function PhoenixTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oBuilding:GetPosition()
 				local iDistanceToPhoenix = distance_sqr(vPosition, vPhoenixPosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
+				local iDistanceToTarget = distance_sqr(vPosition, self.target)
 				if (iDistanceToPhoenix < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition

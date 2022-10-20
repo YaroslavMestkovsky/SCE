@@ -19,14 +19,7 @@ end
 function DHValkyrieTactic:SetTarget( target, variant_type )
 
 	self.variant_type = variant_type
-	self.variant_type = variant_type
-       if self.variant_type==Tactic.Variant.Vector then
-    self.target = Vector3f(target)
-       elseif self.variant_type==Tactic.Variant.SquadAI then
-    self.target = target
-       elseif self.variant_type==Tactic.Variant.BaseAI then
-    self.target = target
-       end
+	self.target = Vector3f(target)
 	self.m_iMoveDelay = 0
 	self.last_jump = 0
 end
@@ -53,10 +46,10 @@ function DHValkyrieTactic:JumpAttackRanged()
 	local iJumpRange = sqr(self.squad_ai:GetJumpDistance())
 	
 	-- Check if we can jump directly to the target
-	local iClosestDistance = distance_sqr(vDHValkyriePosition, self:GetTarget())
+	local iClosestDistance = distance_sqr(vDHValkyriePosition, self.target)
 	local vTargetPos = nil
 	if (iClosestDistance < iJumpRange) then
-		vTargetPos = self:GetTarget()
+		vTargetPos = self.target
 	else
 	
 		-- Get closest squad to target position
@@ -68,7 +61,7 @@ function DHValkyrieTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oSquad:GetPosition()
 				local iDistanceToDHValkyrie = distance_sqr(vPosition, vDHValkyriePosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
+				local iDistanceToTarget = distance_sqr(vPosition, self.target)
 				if (iDistanceToDHValkyrie < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition
@@ -85,7 +78,7 @@ function DHValkyrieTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oBuilding:GetPosition()
 				local iDistanceToDHValkyrie = distance_sqr(vPosition, vDHValkyriePosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
+				local iDistanceToTarget = distance_sqr(vPosition, self.target)
 				if (iDistanceToDHValkyrie < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition

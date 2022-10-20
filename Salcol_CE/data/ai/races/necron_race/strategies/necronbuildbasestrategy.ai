@@ -213,22 +213,40 @@ function NecronBuildBaseStrategy:UpdateTierLevel()
 end
 
 function NecronBuildBaseStrategy:CheckTech()
+        self.techongo = false
+        local type = nil
+        local name = nil
         if self.tierLevel == 1 then
-        self.techongotype = addon
-        self.techongoname = "addon_necron_hq_1"
+        type = addon
+        name = "addon_necron_hq_1"
         elseif self.tierLevel == 2 then
-        self.techongotype = addon
-        self.techongoname = "addon_necron_hq_2"
+        type = addon
+        name = "addon_necron_hq_2"
         elseif self.tierLevel == 3 then
-        self.techongotype = building
-        self.techongoname = "necron_summoning_core_big"
+        type = building
+        name = "necron_summoning_core_big"
         elseif self.tierLevel == 4 then
-        self.techongotype = building
-        self.techongoname = "necron_energy_core"
+        type = building
+        name = "necron_energy_core"
         elseif self.tierLevel == 5 then
-        self.techongotype = research
-        self.techongoname = "necron_apocalypse_research"
+        type = research
+        name = "necron_apocalypse_research"
         end
+       
+        if type == addon then
+        local iTechID = cpu_manager.stats:GetAddOnID(name)
+        elseif type == research then
+        local iTechID = cpu_manager.stats:GetResearchID(name)
+        elseif type == building then
+        local iTechID = cpu_manager.stats:GetBuildingID(name)
+        end
+	for oBuildChannel in build_manager:GetBuildChannelAIs() do
+		-- Check type ID
+		if (oBuildChannel:GetBlueprintID() == iTechID) then
+			self.techongo = true
+                        return
+		end
+	end     
 end
 
 function NecronBuildBaseStrategy:BuildFlexible()
@@ -406,10 +424,10 @@ function NecronBuildBaseStrategy:BuildFlexible()
                         end
 
                         if iPower >= 900 then
-                        self:DynamicResearch("all_squad_unit_cap_1_necron", 3, 0, 900, 15, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_2_necron", 3, 0, 1500, 30, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_3_necron", 3, 0, 4000, 60, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_4_necron", 3, 0, 7000, 70, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_1_necron", 3, 0, 900, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_2_necron", 3, 0, 1500, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_3_necron", 3, 0, 4000, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_4_necron", 3, 0, 7000, 0, 0, nil, 0)
                         end
 
 			-- Compute HQ Tier3 Addons for future HQs

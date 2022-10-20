@@ -26,14 +26,7 @@ end
 function SistersNunciateTactic:SetTarget( target, variant_type )
 
 	self.variant_type = variant_type
-	self.variant_type = variant_type
-       if self.variant_type==Tactic.Variant.Vector then
-    self.target = Vector3f(target)
-       elseif self.variant_type==Tactic.Variant.SquadAI then
-    self.target = target
-       elseif self.variant_type==Tactic.Variant.BaseAI then
-    self.target = target
-       end
+	self.target = Vector3f(target)
 	self.m_iMoveDelay = 0
 	self.last_jump = 0
 end

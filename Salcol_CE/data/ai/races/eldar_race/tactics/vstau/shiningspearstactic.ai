@@ -59,10 +59,10 @@ function ShiningSpearsTactic:JumpAttackRanged()
 	local iJumpRange = sqr(self.squad_ai:GetJumpDistance())
 	
 	-- Check if we can jump directly to the target
-	local iClosestDistance = distance_sqr(vShiningSpearsPosition, self:GetTarget())
+	local iClosestDistance = distance_sqr(vShiningSpearsPosition, self.target)
 	local vTargetPos = nil
 	if (iClosestDistance < iJumpRange) then
-		vTargetPos = self:GetTarget()
+		vTargetPos = self.target
 	else
 	
 		-- Get closest squad to target position
@@ -74,7 +74,7 @@ function ShiningSpearsTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oSquad:GetPosition()
 				local iDistanceToShiningSpears = distance_sqr(vPosition, vShiningSpearsPosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
+				local iDistanceToTarget = distance_sqr(vPosition, self.target)
 				if (iDistanceToShiningSpears < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition
@@ -91,7 +91,7 @@ function ShiningSpearsTactic:JumpAttackRanged()
 				-- Check distance
 				local vPosition = oBuilding:GetPosition()
 				local iDistanceToShiningSpears = distance_sqr(vPosition, vShiningSpearsPosition)
-				local iDistanceToTarget = distance_sqr(vPosition, self:GetTarget())
+				local iDistanceToTarget = distance_sqr(vPosition, self.target)
 				if (iDistanceToShiningSpears < iJumpRange and iDistanceToTarget < iClosestDistance) then
 					iClosestDistance = iDistanceToTarget
 					vTargetPos = vPosition

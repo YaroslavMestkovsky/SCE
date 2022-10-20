@@ -62,7 +62,7 @@ function ChaosRhinoTactic:TransportMove()
 
 	-- Try to unload troops
 	local vSquadPos = self.squad_ai:GetPosition()
-	local iDistance = distance_sqr(self:GetTarget(), vSquadPos)	
+	local iDistance = distance_sqr(self.target, vSquadPos)	
 	if (self:UnloadTroops(iDistance)) then
 		self.m_iMoveDelay = g_iGMT
 		return
@@ -74,9 +74,9 @@ function ChaosRhinoTactic:TransportMove()
 		self.m_iMoveDelay = g_iGMT
 		return
 	elseif (iDistance > sqr(35)) then
-		cpu_manager:DoMove(self.squad_ai, self:GetTarget(), false, "TransportMove")
+		cpu_manager:DoMove(self.squad_ai, self.target, false, "TransportMove")
 	elseif (iDistance > sqr(20) and not cpu_manager.terrain_analyzer:HasThreat(vSquadPos, 35)) then
-		cpu_manager:DoMove(self.squad_ai, self:GetTarget(), false, "TransportMove")
+		cpu_manager:DoMove(self.squad_ai, self.target, false, "TransportMove")
 	else
 		self.squad_ai:DoStop()
 	end

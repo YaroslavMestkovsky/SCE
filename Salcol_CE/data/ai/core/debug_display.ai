@@ -14,7 +14,7 @@ function DebuggingDisplay:__init( )
 	--draw color circles for debug purposes
 	--self.dcircle = true
 
-	self.debug_display_height = 0.0003
+	self.debug_display_height = 0.0001
 	self.debug_view = 0
 
 	--enable debug display according to self.debug_view

@@ -222,12 +222,6 @@ function OrkBuildBaseStrategy:UpdateTierLevel()
 end
 
 function OrkBuildBaseStrategy:CheckTech()
---[[        if self.tierLevel == 1 then
-        self.techongotype = addon
-        self.techongoname = "ork_waagh_banner_population_addon"
-        elseif self.tierLevel == 2 then
-
-        end]]
         self.techongo = true
         return
 --[[        local type = nil
@@ -320,13 +314,6 @@ function OrkBuildBaseStrategy:BuildFlexible()
 	end
 	
 	
-	                        self:DynamicResearch("ork_research_stikk_bombs", 1, 25, 75, 0, 0, nil, 0)
-
-			-- Compute builder research
-			if (self:CountSquads("ork_squad_grot") >= 1) then
-				self:DynamicResearch("ork_research_grot_infiltrate", 1, 50, 25, 0, 0, nil, 0)
-			end
-
 	if (iArmyStrength >= 2000 or (iPower >= 800 and iRequisition >= 900)) then
 		
 		-- Dynamic research item syntax: ResearchName, MinTier, RequisitionCost, PowerCost, MinSquadCap, MinSupportCap, SquadName, SquadMinCount
@@ -338,6 +325,15 @@ function OrkBuildBaseStrategy:BuildFlexible()
 
 		-- Compute tier 1 researches
 		if (self.tierLevel >= 1) then
+
+			-- Compute builder research
+			if (self:CountSquads("ork_squad_grot") >= 1) then
+				self:DynamicResearch("ork_research_grot_infiltrate", 1, 50, 25, 0, 0, nil, 0)
+			end
+
+                        if (iInfantrySquads >= 1) then
+			        self:DynamicResearch("ork_research_stikk_bombs", 1, 25, 75, 0, 0, nil, 0)
+			end
 
 			-- Compute secondary researches
 			if (iArmyStrength >= 750) then
@@ -464,10 +460,10 @@ function OrkBuildBaseStrategy:BuildFlexible()
                         end
 
                         if iRequisition >= 900 then
-                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 12, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 30, 30, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 40, 30, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 50, 40, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 0, 0, nil, 0)
                         end
 
 			-- Compute secondary researches

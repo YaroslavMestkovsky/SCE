@@ -68,11 +68,6 @@ function BaseTactic:__init( base_ai )
 	
 	self.m_bBunker = false
 	self.m_iNextSquadReleaseTime = 0
-
-        self.m_aSquad = nil
-        self.m_iIdleTimeDestroy = 0
-        self.m_bCheckDelete = false
-	self.m_iLifeTime = g_iGMT
 	
 	self.m_bCanDeepStrikeTroops = false
 	
@@ -116,107 +111,31 @@ function BaseTactic:AddToBunkerList()
 end
 
 function BaseTactic:Update()
-	aitrace("Tactic: Update start "..tostring(self.base_ai:GetBaseName()).."...")
-        if self.m_bCheckDelete == true then
-           return false
-        end
- 	local continue = true 
+	
+	local continue = true 
 	if self:GetState() == Tactic.States.Disabled then
 		continue = false
 	end
-	aitrace("tactic: 1", true)
+	
 	if continue and self:IsComplete() then
 		continue = false
 	end
-	aitrace("tactic: 2", true)
+	
 	if continue then
 		self.state_function( self )
 	end
-	aitrace("tactic: 3", true)
+	
 	if (not continue) then
 		return false
 	end
-	aitrace("tactic: 4", true)
-        if self.m_aSquad~=nil then
-         if not self.m_aSquad:IsValid() or self.m_aSquad:GetHealthPercentage()<0.2 then
-               self.m_aSquad = nil
-         end
-        end
-        if self.m_aSquad == nil then
-	local bVehicle = (UnitStatsAI.UC_VehicleLow or UnitStatsAI.UC_VehicleMed or UnitStatsAI.UC_VehicleHigh or UnitStatsAI.UC_MonsterMed or UnitStatsAI.UC_MonsterHigh)
-	local functordestroy = function( squad_ai )		 
-	  local oUnitStats = cpu_manager.stats:GetUnitStatsFromBPID(squad_ai:GetSquad():GetID())
-           if oUnitStats == nil then
-              return (squad_ai:GetTactic():GetType()==Tactic.Types.Vehicle and not squad_ai:IsInCombat() and squad_ai:GetHealthPercentage()>0.8 and distance(self.base_ai:GetPosition(),squad_ai:GetPosition())<10)
-           end
-	  return (((oUnitStats:GetClass()==bVehicle) or (squad_ai:GetTactic():GetType()==Tactic.Types.Vehicle)) and not squad_ai:IsInCombat() and squad_ai:GetHealthPercentage()>0.8 and distance(self.base_ai:GetPosition(),squad_ai:GetPosition())<10)
-	end
-        self.m_aSquad = cpu_manager:FindFirstFriendly(functordestroy)
-        else
-          if distance(self.base_ai:GetPosition(),self.m_aSquad:GetPosition())<10 then
-             self.m_iIdleTimeDestroy = self.m_iIdleTimeDestroy + 1
-          else
-             self.m_iIdleTimeDestroy = 0
-             self.m_aSquad = nil
-          end
-        end
-	aitrace("tactic: 5", true)
-          if self.m_iIdleTimeDestroy > 120 and not cpu_manager:IsListeningPost(self.base_ai:GetBlueprintID()) and self.m_bCheckDelete==false then
-           build_manager:CancelBuilding(self.base_ai:GetEntity():GetID())
-           self.m_iIdleTimeDestroy = 0
-           self.m_aSquad = nil
-           self.m_bCheckDelete = true
-          end
-	aitrace("tactic: 6", true)
-          if ((g_iGMT>self.m_iLifeTime+120 and self.base_ai:GetHealthPercentage()==0.2) or (g_iGMT>self.m_iLifeTime+150 and self.base_ai:GetHealthPercentage()<=0.2) or (g_iGMT>self.m_iLifeTime+250 and self.base_ai:GetHealthPercentage()<=0.6) or (g_iGMT>self.m_iLifeTime+300 and self.base_ai:GetHealthPercentage()<=0.8)) and self.m_bCheckDelete==false and not self.base_ai:IsConstructionDone()  then
-           build_manager:CancelBuilding(self.base_ai:GetEntity():GetID())
-           self.m_iLifeTime = g_iGMT + 5
-           self.m_bCheckDelete = true
-          end
-	aitrace("tactic: 7", true)
-          if self.base_ai:GetHealthPercentage()<0.05 and not self.base_ai:IsConstructionDone() and self.m_bCheckDelete==false then
-           build_manager:CancelBuilding(self.base_ai:GetEntity():GetID())
-           self.m_bCheckDelete = true
-          end
-	aitrace("tactic: 8", true)
-        if self.m_bCheckDelete==false then
+	
 	self:InitAbilities()
+
 	self:DoAbilities()
---       if self.base_ai:HasGuns() then
---	self:FocusEnemy()
---        end
+	
 	self:BunkerCheck()
-        end
-	aitrace("tactic: 9", true)
+
 	return true
-end
-
-function BaseTactic:FocusEnemy()
-    local oEnemyUnit = cpu_manager.cpu_player:FindFirstEnemy(self.base_ai:GetPosition(), 50, 1)
-    if self.target~=nil then
-    local oEnemyUnitFar = cpu_manager.cpu_player:FindFirstInfantryEnemy(self.base_ai:GetPosition(), distance(self.base_ai:GetPosition(),self.target:GetPosition()), 1)
-    end
---[[    if (oEnemyUnit ~= nil) and (oEnemyUnit:IsEngineer() or oEnemyUnit:GetHealthPercentage()<0.3 or oEnemyUnit:IsBroken()) or (oEnemyUnitFar~=nil and (oEnemyUnitFar:IsEngineer() or oEnemyUnitFar:GetHealthPercentage()<0.3 or oEnemyUnitFar:IsBroken())) then
-    	self:SetTarget(oEnemyUnit:GetPosition(),Tactic.Variant.BaseAI)
-    end]]
-
-    if (oEnemyUnit ~= nil) then
-    local oEnemyUnitEnt = oEnemyUnit:GetEntities()
---    local oEnemyChange = oEnemyUnit:GetStats():GetClass()==(iEffectiveness[1][1] or iEffectiveness[2][1] or iEffectiveness[3][1])
-    local unitbuf=nil
-    for unit in oEnemyUnitEnt do
-       unitbuf=unit
-       break
-    end
---    if (oEnemyUnit:IsEngineer() or oEnemyChange or oEnemyUnit:GetHealthPercentage()<0.3 or oEnemyUnit:IsBroken()) then
-     if (oEnemyUnit:IsEngineer() or oEnemyUnit:IsBroken() or oEnemyUnit:GetMeleeStance() == SquadAI.MSTANCE_Ranged) then
-           self:SetTarget(unitbuf:GetSquad(), Tactic.Variant.SquadAI)
-           self:SetState(Tactic.States.Attack)
---[[    elseif not self.squad_ai:IsRanged() and oEnemyChange then
-           self:SetTarget(unitbuf:GetSquad(), Tactic.Variant.SquadAI)
-           self.base_ai:DoDefault(unitbuf)]]
-    end
-    end
 end
 
 function BaseTactic:BunkerCheck()

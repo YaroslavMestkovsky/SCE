@@ -46,21 +46,12 @@ function BuildBuildingPlan:__init( building_id, build_pos, wait_on_builder, fron
 		-- Check if building has a builder
 		local has_builder = false
 		for oSquad in military_manager:GetSquads() do
-		       if oBuilding ~= nil then
-                        local autoconb = military_manager:GetBaseFromID(oBuilding:GetID())
-                        if autoconb then
-                          if cpu_manager:AutoConstructBuildings() and autoconb:GetHealthPercentage() > 0.2 then
-				has_builder = true
-				break
-			  end
-                        end
-
+			
 			-- Check builder
-			if (oSquad:IsValid() and oSquad:IsEngineer() and oSquad:IsBuilding() == self.item_id) then
+			if (oSquad:IsValid() and oSquad:IsEngineer() and oSquad:IsBuilding() == self.item_id and oSquad:IsBuildProgressing()) then
 				has_builder = true
 				break
 			end
-                       end
 		end
 		
 		-- If building has no builder then finish it
@@ -93,7 +84,7 @@ function BuildBuildingPlan:FindEngineerCloseToSP()
 	for oSquad in military_manager:GetUnlockedSquads() do
 	
 		-- Get a valid engineer
-		if (oSquad:IsValid() and oSquad:IsEngineer() and oSquad:CanBuild(self.item_id) == SquadAI.CANBUILD_Ok and (oSquad:IsBuilding() == 0)) then
+		if (oSquad:IsValid() and oSquad:IsEngineer() and oSquad:CanBuild(self.item_id) == SquadAI.CANBUILD_Ok and (oSquad:IsBuilding() == 0) and not oSquad:GetTactic():IsBufer()) then
 		
 			-- Get distance to start point
 			local vSquadPos = oSquad:GetPosition()
@@ -155,7 +146,7 @@ function BuildBuildingPlan:ObtainBuilder()
 		-- Init functor
 		local functor = function( oSquad )
 			return oSquad:IsEngineer() and oSquad:CanBuild( self.item_id ) == SquadAI.CANBUILD_Ok and
-				   not cpu_manager:HasThreatOnPath(oSquad:GetPosition(), self.bestPosition, 20) and oSquad:IsIdle() and not oSquad:IsBuildProgressing() and not oSquad:GetTactic():IsBufer() and not oSquad:IsCapturing()
+				   not cpu_manager:HasThreatOnPath(oSquad:GetPosition(), self.bestPosition, 20) and (oSquad:IsBuilding() == 0) and not oSquad:GetTactic():IsBufer()
 		end
 		
 		-- Find the closest engineer
@@ -401,7 +392,7 @@ function BuildBuildingPlan:BuildBuildingFast()
 		-- Shall we wait for a builder?
 		if (self.wait_on_builder == nil) then	
 			aitrace( "BuildBuildingPlan: No builder found. Abort "..self.item_name )
---			Plan.SetComplete( self, true )
+			Plan.SetComplete( self, true )
 		else
 			aitrace( "BuildBuildingPlan: Search builder for "..self.item_name )	
 		end
@@ -637,7 +628,7 @@ function BuildBuildingPlan:ObtainNewBuilder()
     for oSquad in military_manager:GetUnlockedSquads() do
 
         -- Don't queue
-        if (oSquad:IsValid() and oSquad:IsEngineer() and oSquad:IsIdle() and not oSquad:IsBuildProgressing() and not oSquad:GetTactic():IsBufer()) then
+        if (oSquad:IsValid() and oSquad:IsEngineer() and (oSquad:IsBuilding() == 0) and not oSquad:GetTactic():IsBufer()) then
             
             local squad_pos = oSquad:GetPosition()
             if not cpu_manager:HasThreatOnPath( squad_pos, build_pos, 20 ) then
@@ -758,7 +749,7 @@ function BuildBuildingPlan:Update()
 		-- time to build a big gen 
 		local build_time = 80
 		
-		if (g_iGMT >= self.m_iPlanStart + build_time + 10) then
+		if (g_iGMT <= self.m_iPlanStart + build_time + 10) then
 			aitrace("BuildBuildingPlan: Builder stuck, shift position")
 			if (g_iGMT >= self.shift_move + 8) then 
 				aitrace("BuildBuildingPlan: Builder stuck, set shift state")
@@ -783,7 +774,7 @@ function BuildBuildingPlan:Update()
 			build_time = 35 + cpu_manager:HasBuilding("necron_plasma_generator") * 15
 		end
 	
-		if (g_iGMT >= self.m_iPlanStart + build_time + 10) then
+		if (g_iGMT <= self.m_iPlanStart + build_time + 10) then
 			aitrace("BuildBuildingPlan: Builder stuck, shift position")
 			if (g_iGMT >= self.shift_move + 8) then 
 				aitrace("BuildBuildingPlan: Builder stuck, set shift state")
@@ -807,9 +798,9 @@ function BuildBuildingPlan:Update()
 			self.builder:DoFinishBuilding(self.building)
                 end
 
-        elseif (self.builder ~= nil and self.started_building and self.builder:IsIdle() and not self.builder:IsBuildProgressing() and not self.builder:GetTactic():IsMoving()) then
+        elseif (self.builder ~= nil and self.started_building and not self.builder:IsBuildProgressing() and not self.builder:GetTactic():IsMoving()) then
 	local build_time = 60
-               if (g_iGMT < self.m_iPlanStart + build_time + 10) then
+               if (g_iGMT >= self.m_iPlanStart + build_time + 10) then
 			aitrace("BuildBuildingPlan: Builder stuck, shift position")
 			if (g_iGMT >= self.shift_move + 8) then 
 				aitrace("BuildBuildingPlan: Builder stuck, set shift state")

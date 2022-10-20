@@ -4,10 +4,9 @@
 
 class 'DefendChokePointPlan' (Plan)
 
-DefendChokePointPlan.HarassingTime = 2.5
+DefendChokePointPlan.HarassingTime = 3.5
 DefendChokePointPlan.iHarassingStart = 0
 DefendChokePointPlan.bHarassing = false
-DefendChokePointPlan.bUpdate = 5
 
 function DefendChokePointPlan:__init( choke_pt_pos ) super( CpuPlayer.CT_Defending )
 
@@ -116,8 +115,9 @@ function DefendChokePointPlan:CheckHarassingMode()
 end
 
 function DefendChokePointPlan:Defending()
+
 	aitrace("DefendChokePointPlan: Defending...")
-        if DefendChokePointPlan.bUpdate < g_iGMT then
+
 	-- Check threat at choke point
 	local iMaxDistance = 0
 	local vLeaderPos = nil
@@ -231,8 +231,6 @@ function DefendChokePointPlan:Defending()
 			end
 		end		
 	end
-     DefendChokePointPlan.bUpdate = g_iGMT+1
-     end
 end
 
 function DefendChokePointPlan:UpdateHarassingTarget()

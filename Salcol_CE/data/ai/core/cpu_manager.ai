@@ -9,7 +9,6 @@ import( 'MapDB/mapdb.ai' ) -- Larkin 04.2009 project mapDB
 
 -- Global unit stats
 UnitStats = {}
-BuildingStats = {}
 UnitStrengths = {}
 LeaderStrengths = {}
 Attachments = {}
@@ -20,7 +19,6 @@ import( 'Core/Strategies/BuildOrderStrategy.ai' )
 import( 'Core/Strategies/BuildBaseStrategy.ai' )
 import( 'Core/Strategies/DesignerStrategy.ai' )
 import( 'Core/Strategies/AttackStrategy.ai' )
-import( 'Core/Strategies/AttackStrategy2.ai' )
 import( 'Core/Strategies/DefendStrategy.ai' )
 import( 'Core/Strategies/PlayerInfo.ai' )
 
@@ -35,7 +33,6 @@ import( 'Core/Plans/BuildUnitPlan.ai' )
 import( 'Core/Plans/BuildBuildingPlan.ai' )
 import( 'Core/Plans/BuildResearchPlan.ai' )
 import( 'Core/Plans/AttackPlan.ai' )
-import( 'Core/Plans/AttackPlan2.ai' )
 import( 'Core/Plans/DefendPlan.ai' )
 import( 'Core/Plans/DefendChokePointPlan.ai' )
 
@@ -89,21 +86,19 @@ CpuManager.StrategicTransitions =
 		OnSuccess = { "BuildBaseStrategy", 10, "adopt" },
 		OnFailure = { "BuildBaseStrategy", 10, "override" }
 	},
-	BuildBaseStrategy =	
-        {
+	
+	BuildBaseStrategy =
+	{
 		OnStart = { "DefendStrategy", 2, "spawn" },
 		OnAttack = { "AttackStrategy", 1, "spawn" },
 	},
 	
 	AttackStrategy = 
 	{
-		OnFailure = { "DefendStrategy", 1, "spawn" }
-	},
-	AttackStrategy2 = 
-	{
-		OnFailure = { "DefendStrategy", 1, "spawn" }
-	},
+		OnFailure = { "DefendStrategy", 1, "adopt" }
+	}
 }
+
 CpuManager.ForceTech =
 {
 	StartTier1 = 6,
@@ -315,8 +310,6 @@ function CpuManager:Initialize()
 
         --Mapdb
         g_bUseMapDB = true
-        
-        g_RatioChange = true
 
 	-- Save my player stats pointer
 	self.player_stats = self.stats:GetPlayerStatsFromID( cpu_manager.player_id )
@@ -424,19 +417,19 @@ function CpuManager:Initialize()
 		CpuManager.ForceTech.StartTier5 = 35
 		CpuManager.ForceTech.StartTier6 = 45
 	elseif (CpuManager.AISettings.iTechSpeed == 1) then
-		CpuManager.ForceTech.StartTier1 = math.random(2,4)
-		CpuManager.ForceTech.StartTier2 = math.random(6,10)
-		CpuManager.ForceTech.StartTier3 = math.random(12,14)
-		CpuManager.ForceTech.StartTier4 = math.random(15,20)
-		CpuManager.ForceTech.StartTier5 = math.random(35,40)
+		CpuManager.ForceTech.StartTier1 = math.random(5,6)
+		CpuManager.ForceTech.StartTier2 = math.random(10,12)
+		CpuManager.ForceTech.StartTier3 = math.random(14,17)
+		CpuManager.ForceTech.StartTier4 = math.random(22,25)
+		CpuManager.ForceTech.StartTier5 = math.random(34,40)
 		CpuManager.ForceTech.StartTier6 = 45
 	elseif (CpuManager.AISettings.iTechSpeed == 2) then
-		CpuManager.ForceTech.StartTier1 = 1
-		CpuManager.ForceTech.StartTier2 = 2
-		CpuManager.ForceTech.StartTier3 = 3
-		CpuManager.ForceTech.StartTier4 = 4
-		CpuManager.ForceTech.StartTier5 = 5
-		CpuManager.ForceTech.StartTier6 = 6
+		CpuManager.ForceTech.StartTier1 = 2
+		CpuManager.ForceTech.StartTier2 = 8
+		CpuManager.ForceTech.StartTier3 = 14
+		CpuManager.ForceTech.StartTier4 = 20
+		CpuManager.ForceTech.StartTier5 = 35
+		CpuManager.ForceTech.StartTier6 = 45
 	end
 	
 	-- Check race name
@@ -489,7 +482,6 @@ function CpuManager:Initialize()
 	-- Medium priority
 	self:AddStrategy( "BuildOrderStrategy", 4 )
 	self:AddStrategy( "AttackStrategy", 8 )
-	self:AddStrategy( "AttackStrategy2", 9 )
 	self:AddStrategy( "DefendStrategy", 12 )
 
 	-- Add build base strategy, although it's not updated until build order strategy is finished
@@ -523,24 +515,6 @@ function CpuManager:Initialize()
 
 	-- Return success
 	return true
-end
-
-function CpuManager:GetClassBuilding(name)
-        local BuildClass = nil
-        if table.getn(BuildingStats)==0 then
-           return nil
-        end
-	for Building in BuildingStats do
-		if (BuildingStats[Building].sbp_name==name) then
-			BuildClass = BuildingStats[Building].class
-			break
-		end
-	end
-        if BuildClass==nil then
-        return nil
-        else
-        return BuildClass
-        end
 end
 
 function CpuManager:HQThreat()
@@ -642,11 +616,11 @@ function CpuManager:GetArmyStrength(oPlayer)
 			local vUnitPosition = oUnit:GetPosition()
 			vArmyPosition.x = vArmyPosition.x + iUnitStrength * vUnitPosition.x
 			vArmyPosition.z = vArmyPosition.z + iUnitStrength * vUnitPosition.z
---			aitrace ("CPUMnger: Army unit: "..oUnit:GetSquadName().." S: "..iUnitStrength)
+			aitrace ("CPUMnger: Army unit: "..oUnit:GetSquadName().." S: "..iUnitStrength)
 		elseif oUnit:IsEngineer() then
---			aitrace ("CPUMnger: Army unit: "..oUnit:GetSquadName().." is Engineer")
+			aitrace ("CPUMnger: Army unit: "..oUnit:GetSquadName().." is Engineer")
 		else 
---			aitrace ("CPUMnger: Army unit: "..oUnit:GetSquadName().." Not valid")
+			aitrace ("CPUMnger: Army unit: "..oUnit:GetSquadName().." Not valid")
 		end
 	end
 	if (iArmyStrength > 0) then
@@ -870,8 +844,8 @@ function CpuManager:UpdateCriticalRange()
 		end
 	end
 	
-	-- Min range is 25
-	self.m_iCriticalRange = math.max(self.m_iCriticalRange, 25)
+	-- Min range is 50
+	self.m_iCriticalRange = math.max(self.m_iCriticalRange, 50)
 	
 	-- Update situation in critical range
     self.m_iCriticalThreat, self.m_iCriticalSupport = self:GetArmyStrengthAtPos(self.start_pos, self.m_iCriticalRange)
@@ -1439,8 +1413,6 @@ function CpuManager:AddStrategy( strategy_name, priority )
 		strategy = BuildOrderStrategy( BuildOrderStrategyInfo )
 	elseif (strategy_name == "AttackStrategy") then
 		strategy = AttackStrategy( AttackStrategyInfo )
-	elseif (strategy_name == "AttackStrategy2") then
-		strategy = AttackStrategy2( AttackStrategyInfo )
 	elseif (strategy_name == "DefendStrategy") then
 		strategy = DefendStrategy()
 	end
@@ -1538,10 +1510,6 @@ function CpuManager:Update()
 		return
 	end
 
-        if self.player_stats:IsPlayerDead() or (self.player_stats:GetNumBases()==0 and self.player_stats:GetNumSquads()==0) then
-                return
-        end
-
 	-- Update time game
 	g_iGMT = cpu_manager.cpu_player:GetGameTime() / 8
 
@@ -1578,25 +1546,13 @@ function CpuManager:Update()
 	end
 	
 	-- Trace resources
-	aitrace("Req: "..tostring(resource_manager:GetResourceAmount():Get(ResourceAmount.RT_Requisition) ).. " | Pow: "..tostring(resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Power )).. " | Pop: "..tostring(resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Pop )) )
+	aitrace("Req: "..tostring(resource_manager:GetResourceAmount():Get(ResourceAmount.RT_Requisition) )..
+			" | Pow: "..tostring(resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Power ))..
+			" | Pop: "..tostring(resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Pop )) )
 	
 	-- Update managers
-	self:UpdateManagers()
-        if g_iGMT>5 then
-        local iBasetemp = 0
-        local iSquadtemp = 0
-            for squad in military_manager:GetSquads() do
-            iSquadtemp = iSquadtemp + 1
-            end
-            for base in military_manager:GetBases() do
-            iBasetemp = iBasetemp + 1
-            end
---	aitrace("iSquadtemp: "..tostring(iSquadtemp) )
---	aitrace("iBasetemp: "..tostring(iBasetemp) )
-            if iBasetemp==0 and iSquadtemp ==0 then
-            return
-            end
-        end
+--	self:UpdateManagers()
+		
 	-- Reset army strength array
 	self.m_aArmyStrength = {}
 	
@@ -1668,36 +1624,13 @@ function CpuManager:Update()
 		
 	-- Skips every second round in mid and late game
 	if (iAIMode == 2 or (g_iGMT < (DefendChokePointPlan.HarassingTime + 3) * 60)) then
-		local aDeepStrikeSquads = {}
-		-- Update building tactics
-		aipushtrace("CpuManager: Update building tactics...", true)
-		for oBuilding in military_manager:GetBases() do
-			aitrace("cpu: 1", true)
-			-- Check if building is valid
-			if (oBuilding:IsValid()) then	
-				-- Update tactic
-				local oTactic = oBuilding:GetTactic()
-				aitrace("cpu: 2", true)
-				oTactic:Update()
-				aitrace("cpu: 3", true)
-				-- Check for deepstrike buildings
-				if (oTactic:CanDeepStrikeTroops()) then
-				aitrace("cpu: 4", true)
-					-- Update deepstrikers with deepstrike building
-					for iLoop1 in aDeepStrikeSquads do
-						aDeepStrikeSquads[iLoop1]:SetDeepStrikeBuilding(oBuilding)
-					end
-					aitrace("cpu: 5", true)
-				end
-			end
-		end
-		aipoptrace("CpuManager: Update building tactics...", true)
 	if g_iGMT > self.m_iNextUpdateTactics then
 		-- Update bunker list
 		self:UpdateActiveBunkers()
 			
 		-- Check for transport vehicles and deepstrikers
 		self.m_aActiveTransporters = {}
+		local aDeepStrikeSquads = {}
 		local aUnitTactics = {}
                 local aUnitSquad = {}
 		for oUnit in military_manager:GetSquads() do
@@ -1731,6 +1664,30 @@ function CpuManager:Update()
 		 end
                  self.m_iNextUpdateTactics = g_iGMT + 0.5
 		 aipoptrace("CpuManager: Update unit tactics...", true)
+
+		
+		-- Update building tactics
+		aipushtrace("CpuManager: Update building tactics...", true)
+		for oBuilding in military_manager:GetBases() do
+		
+			-- Check if building is valid
+			if (oBuilding:IsValid()) then
+					
+				-- Update tactic
+				local oTactic = oBuilding:GetTactic()
+				oTactic:Update()
+				
+				-- Check for deepstrike buildings
+				if (oTactic:CanDeepStrikeTroops()) then
+				
+					-- Update deepstrikers with deepstrike building
+					for iLoop1 in aDeepStrikeSquads do
+						aDeepStrikeSquads[iLoop1]:SetDeepStrikeBuilding(oBuilding)
+					end
+				end
+			end
+		end
+		aipoptrace("CpuManager: Update unit tactics...", true)
         end
 	end
 		
@@ -2000,9 +1957,7 @@ function CpuManager:GetClosestSquad( pos, range, functor, count )
 end
 
 function CpuManager:FindFirstFriendly( functor )
-        if functor == nil then
-           return
-        end
+
 	for squad in military_manager:GetSquads() do
 	
 		--fulfills requirements
@@ -2166,7 +2121,7 @@ function CpuManager:FindClosestEnemyPlayer( attack )
     --avoid assertion while all enemies are already dead
     if closest == nil then
     	closest = self:GetFirstEnemyPlayer()
-    	current_distance = 1000
+    	current_distance = 150
 	end
 
 	dbAssert( closest ~= nil )
@@ -2174,37 +2129,6 @@ function CpuManager:FindClosestEnemyPlayer( attack )
 	self.closest_enemy_distance = current_distance
 	
 	return closest, current_distance
-end
-
-function CpuManager:FindFirstEnemyPlayerTable(item)
-        if item == nil then
-           item = 1 
-        end
-	local pos = Vector3f(0,0,0)
-        local dist = 0
-        local enemytable = {}
-	for enemy in self.stats:GetPlayerStats() do
-		if cpu_manager.player_stats:IsEnemy( enemy ) and not enemy:IsPlayerDead() then
-                if table.getn(enemytable)==item then
-                   break
-                end
-                pos = enemy:GetStartingPosition()
-	        dist = cpu_manager:GetShortestPathingDistance( pos, self.start_pos, true )
-                table.insert(enemytable,{enemy,pos,dist})
-		end
-	end
-        table.sort(enemytable,function(e1,e2) return e1[3] < e2[3] end)
-        if table.getn(enemytable)==0 then
-           return nil 
-        end
-        for i=1,8 do
-         if table.getn(enemytable)<7 then
-           table.insert(enemytable,{nil,Vector3f(0,0,0),0})
-         else
-           break
-         end
-        end
-        return enemytable
 end
 
 --? @shortdesc Find the closes base or strategic point from position from_pos.  
@@ -2732,13 +2656,6 @@ function CpuManager:GetAttackRatio()
 	if (iRatio == nil) then
 		return 4 / 5
 	end
-        
-        if g_RatioChange == true then
-         if g_iGMT >= 420 then
-         iRatio = 3 / 5
-         end
-        end
-        
 	return iRatio
 end
 
@@ -2756,13 +2673,6 @@ function CpuManager:GetRetreatRatio()
 	if (iRatio == nil) then
 		return 3 / 5
 	end
-
-        if g_RatioChange == true then
-         if g_iGMT >= 420 then
-         iRatio = 1 / 5
-         end
-        end
-
 	return iRatio
 end
 
@@ -3666,21 +3576,20 @@ function CpuManager:GetFrontBuildPosition(sMasterBuilding, sSlaveBuilding, iSlav
 end
 
 -- Thudo 25.2007: Builds a specific amount of slave buildings around the closest master building away from the enemy
-function CpuManager:GetSafeBuildPosition(sMasterBuilding, sSlaveBuilding, iSlaveCount, iBiasAwayFromEnemy, iRangeBase)
+function CpuManager:GetSafeBuildPosition(sMasterBuilding, sSlaveBuilding, iSlaveCount, iBiasAwayFromEnemy)
 
 	-- Check building names
 	if (sMasterBuilding == nil or sSlaveBuilding == nil) then
 		return nil, 0
 	end
-        if iRangeBase==nil then
-           iRangeBase=-1
-        end
 
 	-- Get closest enemy player
-	local oEnemyTable = self:FindFirstEnemyPlayerTable(3)
-	if (oEnemyTable == nil) then
+	local oEnemy = self:FindClosestEnemyPlayer()
+	if (oEnemy == nil) then
 		return nil, 0
 	end
+	local vEnemyPos = oEnemy:GetStartingPosition()
+
 	-- Get the positions of slave and master buildings
 	local aMasterPositions = {}
 	local aSlavePositions = {}
@@ -3690,7 +3599,7 @@ function CpuManager:GetSafeBuildPosition(sMasterBuilding, sSlaveBuilding, iSlave
 		if (oBuilding:IsValid()) then
 		
 			-- Check for master and slave buildings
-			if (oBuilding:GetBaseName() == sMasterBuilding) and distance(oBuilding:GetPosition(),self.start_pos)>iRangeBase then			
+			if (oBuilding:GetBaseName() == sMasterBuilding) then			
 				table.insert(aMasterPositions, oBuilding:GetPosition())
 			elseif (not oBuilding:IsListeningPost() and oBuilding:GetBaseName() == sSlaveBuilding) then
 				table.insert(aSlavePositions, oBuilding:GetPosition())
@@ -3700,9 +3609,8 @@ function CpuManager:GetSafeBuildPosition(sMasterBuilding, sSlaveBuilding, iSlave
 	
 	-- Check the positions of the master buildings
 	local vBuildPos = nil
+	local iFarthestDistanceToEnemy = 0
 	local iMaxRange = sqr(50)
-        local iDistbest = 0
-        local idisttemp = 0
 	for iLoop1 in aMasterPositions do
 	  
 		-- Get position
@@ -3720,58 +3628,32 @@ function CpuManager:GetSafeBuildPosition(sMasterBuilding, sSlaveBuilding, iSlave
 
 		-- Make further checks if we can still build around the master building
 		if (iCount < iSlaveCount) then
+		
 			-- Take farthest build pos to enemy
-			      local iDistanceToEnemy1 = distance(vMasterPos, oEnemyTable[1][2])
-			      local iDistanceToEnemy2 = 1
-			      local iDistanceToEnemy3 = 1
-                              if oEnemyTable[2][2].x~=0 or oEnemyTable[2][2].z~=0 then
-			      local iDistanceToEnemy2 = distance(vMasterPos, oEnemyTable[2][2])	
-                              end
-                              if oEnemyTable[3][2].x~=0 or oEnemyTable[3][2].z~=0 then
-			      local iDistanceToEnemy3 = distance(vMasterPos, oEnemyTable[3][2])	
-                              end		
-	                      local disttemp = math.sqrt(iDistanceToEnemy1) + math.sqrt(iDistanceToEnemy2) + math.sqrt(iDistanceToEnemy3)
-                              if vBuildPos == nil or disttemp > idisttemp then
-                                iDistbest = iDistanceToEnemy1 + iDistanceToEnemy2 + iDistanceToEnemy3
-                                idisttemp = disttemp
+			local iDistanceToEnemy = distance_sqr(vMasterPos, vEnemyPos)
+			if (vBuildPos == nil or iDistanceToEnemy > iFarthestDistanceToEnemy) then			
 				vBuildPos = vMasterPos
-                              end
+				iFarthestDistanceToEnemy = iDistanceToEnemy
+			end
 		end
 	end
-        if vBuildPos == nil then
+	if (vBuildPos == nil) then
 		return nil, 0
 	end
-
+	
 	-- Calculate direction vector
-	iDistbest = iDistbest
+	iFarthestDistanceToEnemy = math.sqrt(iFarthestDistanceToEnemy)
 	vDir = Vector3f(0, 0, 0)
-	vDir.x = (oEnemyTable[1][2].x + oEnemyTable[2][2].x + oEnemyTable[3][2].x + vBuildPos.x) / iDistbest
-	vDir.z = (oEnemyTable[1][2].z + oEnemyTable[2][2].z + oEnemyTable[3][2].z + vBuildPos.z) / iDistbest
+	vDir.x = (vEnemyPos.x + vBuildPos.x) / iFarthestDistanceToEnemy
+	vDir.z = (vEnemyPos.z + vBuildPos.z) / iFarthestDistanceToEnemy
 	
 	-- Add bias to enemy
-	iDistbest = iDistbest + iBiasAwayFromEnemy
+	iFarthestDistanceToEnemy = iFarthestDistanceToEnemy + iBiasAwayFromEnemy
 	vBuildPos.x = vBuildPos.x + vDir.x * iBiasAwayFromEnemy
 	vBuildPos.z = vBuildPos.z + vDir.z * iBiasAwayFromEnemy
 
 	-- Return build position and its distance away from the closest enemy player
-	return vBuildPos, iDistbest
-end
-
-function CpuManager:IsRally( build_id )
-
-	-- Check build base strategy
-	if (self.build_base_strategy ~= nil) then
-		
-		-- Get race specific building data
-		local sBuildingName	= self.build_base_strategy:GetBuildingName("VehicleBuilding") or self.build_base_strategy:GetBuildingName("VehicleBuilding")
-		local iBuildingID	= cpu_manager.stats:GetBuildingID(sBuildingName)
-		
-		-- Compare IDs
-		if (iBuildingID == build_id) then
-			return true
-		end
-	end
-	return false
+	return vBuildPos, iFarthestDistanceToEnemy
 end
 
 function CpuManager:IsHQ( build_id )

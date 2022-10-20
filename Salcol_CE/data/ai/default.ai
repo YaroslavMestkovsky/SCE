@@ -42,7 +42,7 @@ function AI_Think()
 	if not cpu_manager.cpu_player:DoUpdate() then
 		return
 	end
-
+	
 	if( ai_assert == true ) then
 		DebugDisplay()
 		return
@@ -128,7 +128,7 @@ function InitializeAI()
 
 		Rule_AddInterval(AI_Think, 0.05)
 		Rule_AddInterval(UpdateManagersCPU, 0.25)
-		Rule_AddInterval(UpdateStats, 1+(cpu_manager.player_id-1000)*0.125)
+		Rule_AddInterval(UpdateStats, 1+(cpu_manager.player_id*0.125)/1000)
 --		Rule_AddInterval(garbage, 1)
 		
 	else

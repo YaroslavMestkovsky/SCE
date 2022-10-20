@@ -255,22 +255,40 @@ function SistersBuildBaseStrategy:UpdateTierLevel()
 end
 
 function SistersBuildBaseStrategy:CheckTech()
+        self.techongo = false
+        local type = nil
+        local name = nil
         if self.tierLevel == 1 then
-        self.techongotype = addon
-        self.techongoname = "addon_sisters_hq_1"
+        type = addon
+        name = "addon_sisters_hq_1"
         elseif self.tierLevel == 2 then
-        self.techongotype = addon
-        self.techongoname = "addon_sisters_hq_2"
+        type = addon
+        name = "addon_sisters_hq_2"
         elseif self.tierLevel == 3 then
-        self.techongotype = building
-        self.techongoname = "sisters_shrine"
+        type = building
+        name = "sisters_shrine"
         elseif self.tierLevel == 4 then
-        self.techongotype = research
-        self.techongoname = "sisters_research_hammer"
+        type = research
+        name = "sisters_research_hammer"
         elseif self.tierLevel == 5 then
-        self.techongotype = research
-        self.techongoname = "sisters_apocalypse_research"
+        type = research
+        name = "sisters_apocalypse_research"
         end
+       
+        if type == addon then
+        local iTechID = cpu_manager.stats:GetAddOnID(name)
+        elseif type == research then
+        local iTechID = cpu_manager.stats:GetResearchID(name)
+        elseif type == building then
+        local iTechID = cpu_manager.stats:GetBuildingID(name)
+        end
+	for oBuildChannel in build_manager:GetBuildChannelAIs() do
+		-- Check type ID
+		if (oBuildChannel:GetBlueprintID() == iTechID) then
+			self.techongo = true
+                        return
+		end
+	end     
 end
 
 function SistersBuildBaseStrategy:BuildFlexible()
@@ -524,10 +542,10 @@ function SistersBuildBaseStrategy:BuildFlexible()
                         end
 
                         if iRequisition >= 900 then
-                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 12, 0, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 30, 30, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 40, 30, nil, 0)
-                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 50, 40, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_1", 3, 900, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_2", 3, 1500, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_3", 3, 4000, 0, 0, 0, nil, 0)
+                        self:DynamicResearch("all_squad_unit_cap_4", 3, 7000, 0, 0, 0, nil, 0)
                         end
 			
 			-- Compute repentia researches
@@ -623,7 +641,7 @@ function SistersBuildBaseStrategy:BuildFlexible()
               if iRequisition >= 100 and iPower >= 100 then
 		self:DynamicAddon("addon_sisters_list_post_1", 1*Numpoint, 1, 0, 0, 0, 0, nil, nil, false)
               end
-              if iRequisition >= 500 and iPower >= 700 then
+              if iRequisition >= 300 and iPower >= 300 then
 		self:DynamicAddon("addon_sisters_list_post_2", 1*Numpoint, 2, 0, 0, 0, 0, nil, nil, false)
               end
 
